@@ -37,15 +37,15 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     // build constraint table
     auto t = clock();
     ConstraintTable constraint_table(initial_constraints);
-    constraint_table.insert2CT(node, agent);
+    constraint_table.insert2CT(node, agent); //inserts all constraints at its parents
     runtime_build_CT = (double)(clock() - t) / CLOCKS_PER_SEC;
-    if (constraint_table.constrained(start_location, 0))
+    if (constraint_table.constrained(start_location, 0)) // Check if at the beg (t=0) start location is constrained
     {
         return {path, 0};
     }
 
     t = clock();
-    constraint_table.insert2CAT(agent, paths);
+    constraint_table.insert2CAT(agent, paths); //initially path is empty and hence this shouldn't give anything?
     runtime_build_CAT = (double)(clock() - t) / CLOCKS_PER_SEC;
 
     // the earliest timestep that the agent can hold its goal location. The length_min is considered here.
@@ -67,14 +67,14 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     while (!open_list.empty())
     {
         updateFocalList(); // update FOCAL if min f-val increased
-        auto* curr = popNode();
+        auto* curr = popNode(); // pop from Focal and remove that node from open
         assert(curr->location >= 0);
         // check if the popped node is a goal
         if (curr->location == goal_location && // arrive at the goal location
             !curr->wait_at_goal && // not wait at the goal location
             curr->timestep >= holding_time) // the agent can hold the goal location afterward
         {
-            updatePath(curr, path);
+            updatePath(curr, path); //Backtrack
             break;
         }
 
@@ -86,7 +86,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
         for (int next_location : next_locations)
         {
             int next_timestep = curr->timestep + 1;
-            if (static_timestep < next_timestep)
+            if (static_timestep < next_timestep) //Do not understand this part
             { // now everything is static, so switch to space A* where we always use the same timestep
                 if (next_location == curr->location)
                 {
@@ -95,8 +95,10 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
                 next_timestep--;
             }
 
+            //change collision checking?
+
             if (constraint_table.constrained(next_location, next_timestep) ||
-                constraint_table.constrained(curr->location, next_location, next_timestep))
+                constraint_table.constrained(curr->location, next_location, next_timestep)) // vertex and edge collision why check here?
                 continue;
 
             // compute cost to next_id via curr node

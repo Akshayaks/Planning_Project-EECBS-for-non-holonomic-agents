@@ -6,6 +6,7 @@ class LLNode // low-level node
 {
 public:
 	int location;
+	float theta; //theta to make it a differential drive setting
 	int g_val;
 	int h_val = 0;
 	LLNode* parent;

@@ -262,7 +262,7 @@ void ECBS::updatePaths(ECBSNode* curr)
 
 bool ECBS::generateRoot()
 {
-	auto root = new ECBSNode();
+	auto root = new ECBSNode(); //High level node
 	root->g_val = 0;
 	root->sum_of_costs = 0;
 	paths.resize(num_of_agents, nullptr);
@@ -278,6 +278,7 @@ bool ECBS::generateRoot()
 
 	for (auto i : agents)
 	{
+		//search_engine can be SIPP or SpaceTimeAstar
 		paths_found_initially[i] = search_engines[i]->findSuboptimalPath(*root, initial_constraints[i], paths, i, 0, suboptimality);
 		if (paths_found_initially[i].first.empty())
 		{
