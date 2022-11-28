@@ -239,12 +239,12 @@ bool ConstraintTable::constrained(size_t loc, int t) const
             return true;  // violate the positive vertex constraint
     }
 
-    const auto& it = ct.find(loc);
+    const auto& it = ct.find(loc); //Find constraint involving this location 
     if (it == ct.end())
     {
         return false;
     }
-    for (const auto& constraint: it->second)
+    for (const auto& constraint: it->second) //If the constraint exists and the timestep falls in the time interval of the constraint then return true
     {
         if (constraint.first <= t && t < constraint.second)
             return true;

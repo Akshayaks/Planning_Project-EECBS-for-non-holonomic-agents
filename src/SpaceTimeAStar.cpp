@@ -22,6 +22,7 @@ Path SpaceTimeAStar::findOptimalPath(const HLNode& node, const ConstraintTable& 
     return findSuboptimalPath(node, initial_constraints, paths, agent, lowerbound, 1).first;
 }
 
+//Low level planner for each agent
 // find path by time-space A* search
 // Returns a bounded-suboptimal path that satisfies the constraints of the give node  while
 // minimizing the number of internal conflicts (that is conflicts with known_paths for other agents found so far).
@@ -82,7 +83,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
             continue;
 
         auto next_locations = instance.getNeighbors(curr->location);
-        next_locations.emplace_back(curr->location);
+        next_locations.emplace_back(curr->location); // Add current location also as the agent can wait there?
         for (int next_location : next_locations)
         {
             int next_timestep = curr->timestep + 1;
@@ -116,6 +117,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
                 next->wait_at_goal = true;
 
             // try to retrieve it from the hash table
+            // check if node already in closed list? it is an element in CBS class
             auto it = allNodes_table.find(next);
             if (it == allNodes_table.end())
             {
@@ -125,7 +127,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
             }
             // update existing node's if needed (only in the open_list)
 
-            auto existing_next = *it;
+            auto existing_next = *it; //it now points to the HL node?
             if (existing_next->getFVal() > next->getFVal() || // if f-val decreased through this new path
                 (existing_next->getFVal() == next->getFVal() &&
                  existing_next->num_of_conflicts > next->num_of_conflicts)) // or it remains the same but there's fewer conflicts

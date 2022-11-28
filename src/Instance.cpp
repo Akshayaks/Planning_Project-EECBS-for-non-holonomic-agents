@@ -142,7 +142,8 @@ bool Instance::validMove(int curr, int next) const
 		return false;
 	if (my_map[next])
 		return false;
-	return getManhattanDistance(curr, next) < 2;
+	//Change cond to max theta change and max path length?
+	return getManhattanDistance(curr, next) < 2; 
 }
 
 bool Instance::addObstacle(int obstacle)
