@@ -3,6 +3,7 @@
 
 bool ECBS::solve(double time_limit, int _cost_lowerbound)
 {
+	cout << "\nInside ECBS solve";
 	this->cost_lowerbound = _cost_lowerbound;
 	this->inadmissible_cost_lowerbound = 0;
 	this->time_limit = time_limit;

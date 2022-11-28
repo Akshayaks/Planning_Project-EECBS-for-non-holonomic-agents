@@ -28,10 +28,6 @@ CBS.h
 queue
 -
 
-/home/akshaya/Downloads/EECBS/src/CBSNode.cpp
-CBSNode.h
-/home/akshaya/Downloads/EECBS/src/CBSNode.h
-
 /home/akshaya/Downloads/EECBS/src/Conflict.cpp
 Conflict.h
 /home/akshaya/Downloads/EECBS/src/Conflict.h
@@ -53,10 +49,6 @@ utility
 -
 iostream
 -
-
-/home/akshaya/Downloads/EECBS/src/ConstraintTable.cpp
-ConstraintTable.h
-/home/akshaya/Downloads/EECBS/src/ConstraintTable.h
 
 /home/akshaya/Downloads/EECBS/src/CorridorReasoning.cpp
 CorridorReasoning.h
@@ -82,18 +74,6 @@ iostream
 ConstraintPropagation.h
 /home/akshaya/Downloads/EECBS/src/ConstraintPropagation.h
 
-/home/akshaya/Downloads/EECBS/src/Instance.cpp
-boost/tokenizer.hpp
--
-algorithm
--
-random
--
-chrono
--
-Instance.h
-/home/akshaya/Downloads/EECBS/src/Instance.h
-
 /home/akshaya/Downloads/EECBS/src/MDD.cpp
 MDD.h
 /home/akshaya/Downloads/EECBS/src/MDD.h
@@ -114,10 +94,6 @@ RectangleReasoning.h
 memory
 -
 
-/home/akshaya/Downloads/EECBS/src/ReservationTable.cpp
-ReservationTable.h
-/home/akshaya/Downloads/EECBS/src/ReservationTable.h
-
 /home/akshaya/Downloads/EECBS/src/SIPP.cpp
 SIPP.h
 /home/akshaya/Downloads/EECBS/src/SIPP.h
@@ -129,10 +105,6 @@ SingleAgentSolver.h
 /home/akshaya/Downloads/EECBS/src/SpaceTimeAStar.cpp
 SpaceTimeAStar.h
 /home/akshaya/Downloads/EECBS/src/SpaceTimeAStar.h
-
-/home/akshaya/Downloads/EECBS/src/common.cpp
-common.h
-/home/akshaya/Downloads/EECBS/src/common.h
 
 /home/akshaya/Downloads/EECBS/src/driver.cpp
 boost/program_options.hpp

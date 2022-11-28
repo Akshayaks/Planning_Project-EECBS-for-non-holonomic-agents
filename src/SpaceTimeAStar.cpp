@@ -30,6 +30,7 @@ Path SpaceTimeAStar::findOptimalPath(const HLNode& node, const ConstraintTable& 
 pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const ConstraintTable& initial_constraints,
                                                    const vector<Path*>& paths, int agent, int lowerbound, double w)
 {
+    // cout << "\nInside space time Astar findSuboptimalPath";
     this->w = w;
     Path path;
     num_expanded = 0;
@@ -55,7 +56,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     lowerbound =  max(holding_time, lowerbound);
 
     // generate start and add it to the OPEN & FOCAL list
-    auto start = new AStarNode(start_location, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);
+    auto start = new AStarNode(start_location, 0, 0, 0, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);
 
     num_generated++;
     start->open_handle = open_list.push(start);
