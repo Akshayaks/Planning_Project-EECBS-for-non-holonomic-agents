@@ -3,6 +3,9 @@
 #include <random>      // std::default_random_engine
 #include <chrono>       // std::chrono::system_clock
 #include"Instance.h"
+#include <stdio.h>
+#include <iostream>
+#include <math.h>
 
 int RANDOM_WALK_STEPS = 100000;
 
@@ -139,11 +142,17 @@ void Instance::generateRandomAgents(int warehouse_width)
 bool Instance::validMove(int curr, int next) const
 {
 	if (next < 0 || next >= map_size)
+	{
+		// cout <<"\nOut of the map!";
 		return false;
+	}
 	if (my_map[next])
+	{
+		// cout << "\nObstacle!";
 		return false;
+	}
 	//Change cond to max theta change and max path length?
-	return getManhattanDistance(curr, next) < 2; 
+	return getManhattanDistance(curr, next) <= 2; 
 }
 
 bool Instance::addObstacle(int obstacle)
@@ -453,5 +462,224 @@ list<int> Instance::getNeighbors(int curr) const
 		if (validMove(curr, next))
 			neighbors.emplace_back(next);
 	}
+	return neighbors;
+}
+
+list<pair<int,double>> Instance::getPrimitives(int loc, int timestep, int theta) const
+{
+	list<pair<int,double>> neighbors;
+	int x = getRowCoordinate(loc);
+	int y = getColCoordinate(loc);
+	// cout << this->num_of_cols;
+
+	if(theta < 0.1){
+		theta = 0;
+	}
+	// cout << "\ncurrx: " << x;
+	// cout << "\ncurry: " << y;
+	// cout << "\ntheta: " << theta;
+
+	neighbors.emplace_back(make_pair(loc,theta));
+
+	if(theta == 0){
+		int n1 = (x)*this->num_of_cols+y+1;
+		// cout << "\n" << x < " " << y+1;
+		if (validMove(loc, n1)){
+			// // cout  "\nvalid 1";
+			neighbors.emplace_back(make_pair(n1,0));
+		}
+
+		int n2 = (x-1)*this->num_of_cols+y+1;
+		// cout << "\n" << x-1 << " " << y+1;
+		if (validMove(loc, n2)){
+			// // cout  "\nvalid 2";
+			neighbors.emplace_back(make_pair(n2,45));
+		}
+
+		int n3 = (x+1)*this->num_of_cols+y+1;
+		// cout << "\n" << x+1 << " " << y+1;
+		if (validMove(loc, n3)){
+			// // cout  "\nvalid 3";
+			neighbors.emplace_back(make_pair(n3,315));
+		}
+	}
+
+	else if(theta == 45){
+		int n1 = (x-1)*this->num_of_cols+y+1;
+		// cout << "\n" << x-1 << " " << y+1;
+		if (validMove(loc, n1)){
+			// // cout  "\nvalid 1";
+			neighbors.emplace_back(make_pair(n1,45));
+		}
+
+		int n2 = (x-1)*this->num_of_cols+y;
+		// cout << "\n" << x-1 << " " << y;
+		if (validMove(loc, n2)){
+			// // cout  "\nvalid 2";
+			neighbors.emplace_back(make_pair(n2,90));
+		}
+
+		int n3 = (x)*this->num_of_cols+y+1;
+		// cout << "\n" << x << " " << y+1;
+		if (validMove(loc, n3)){
+			// cout << "\nvlaid 3";
+			neighbors.emplace_back(make_pair(n3,0));
+		}
+	}
+
+	else if(theta == 90){
+		int n1 = (x-1)*this->num_of_cols+y;
+		// cout << "\n" << x-1 << " " << y;
+		if (validMove(loc, n1)){
+			// // cout  "\nvalid 1";
+			neighbors.emplace_back(make_pair(n1,90));
+		}
+
+		int n2 = (x-1)*this->num_of_cols+y-1;
+		// cout << "\n" << x-1 << " " << y-1;
+		if (validMove(loc, n2)){
+			// // cout  "\nvalid 2";
+			neighbors.emplace_back(make_pair(n2,135));
+		}
+
+		int n3 = (x-1)*this->num_of_cols+y+1;
+		// cout << "\n" << x-1 << " " << y+1;
+		if (validMove(loc, n3)){
+			// // cout  "\nvalid 3";
+			neighbors.emplace_back(make_pair(n3,45));
+		}
+	}
+
+	else if(theta == 135){
+		int n1 = (x-1)*this->num_of_cols+y-1;
+		// cout << "\n" << x-1 << " " << y-1;
+		if (validMove(loc, n1)){
+			// cout << "\nvlaid 1";
+			neighbors.emplace_back(make_pair(n1,135));
+		}
+
+		int n2 = (x)*this->num_of_cols+y-1;
+		// cout << "\n" << x << " " << y-1;
+		if (validMove(loc, n2)){
+			// // cout  "\nvalid 2";
+			neighbors.emplace_back(make_pair(n2,180));
+		}
+
+		int n3 = (x-1)*this->num_of_cols+y;
+		// cout << "\n" << x-1 << " " << y;
+		if (validMove(loc, n3)){
+			// // cout  "\nvalid 3";
+			neighbors.emplace_back(make_pair(n3,90));
+		}
+	}
+
+	else if(theta == 180){
+		int n1 = (x)*this->num_of_cols+y-1;
+		// cout << "\n" << x << " " << y-1;
+		if (validMove(loc, n1)){
+			// // cout  "\nvalid 1";
+			neighbors.emplace_back(make_pair(n1,180));
+		}
+
+		int n2 = (x-1)*this->num_of_cols+y-1;
+		// cout << "\n" << x-1 << " " << y-1;
+		if (validMove(loc, n2)){
+			// // cout  "\nvalid 2";
+			neighbors.emplace_back(make_pair(n2,135));
+		}
+
+		int n3 = (x+1)*this->num_of_cols+y-1;
+		// cout << "\n" << x+1 << " " << y-1;
+		if (validMove(loc, n3)){
+			// // cout  "\nvalid 3";
+			neighbors.emplace_back(make_pair(n3,225));
+		}
+	}
+
+	else if(theta == 225){
+		int n1 = (x+1)*this->num_of_cols+y-1;
+		// cout << "\n" << x+1 << " " << y-1;
+		if (validMove(loc, n1)){
+			// // cout  "\nvalid 1";
+			neighbors.emplace_back(make_pair(n1,225));
+		}
+
+		int n2 = (x)*this->num_of_cols+y-1;
+		// cout << "\n" << x << " " << y-1;
+		if (validMove(loc, n2)){
+			// // cout  "\nvalid 2";
+			neighbors.emplace_back(make_pair(n2,180));
+		}
+
+		int n3 = (x+1)*this->num_of_cols+y;
+		// cout << "\n" << x+1 << " " << y;
+		if (validMove(loc, n3)){
+			// // cout  "\nvalid 3";
+			neighbors.emplace_back(make_pair(n3,270));
+		}
+	}
+
+	else if(theta == 270){
+		int n1 = (x+1)*this->num_of_cols+y;
+		// cout << "\n" << x+1 << " " << y;
+		if (validMove(loc, n1)){
+			// // cout  "\nvalid 1";
+			neighbors.emplace_back(make_pair(n1,270));
+		}
+
+		int n2 = (x+1)*this->num_of_cols+y-1;
+		// cout << "\n" << x+1 << " " << y-1;
+		if (validMove(loc, n2)){
+			// cout << "\nvlaid 2";
+			neighbors.emplace_back(make_pair(n2,225));
+		}
+
+		int n3 = (x+1)*this->num_of_cols+y+1;
+		// cout << "\n" << x+1 << " " << y+1;
+		if (validMove(loc, n3)){
+			// // cout  "\nvalid 3";
+			neighbors.emplace_back(make_pair(n3,315));
+		}
+	}
+
+	else if(theta == 315){
+		int n1 = (x+1)*this->num_of_cols+y+1;
+		// cout << "\n" << x+1 << " " << y+1;
+		if (validMove(loc, n1)){
+			// // cout  "\nvalid 1";
+			neighbors.emplace_back(make_pair(n1,315));
+		}
+
+		int n2 = (x)*this->num_of_cols+y+1;
+		// cout << "\n" << x << " " << y+1;
+		if (validMove(loc, n2)){
+			// cout  "\nvalid 2";
+			neighbors.emplace_back(make_pair(n2,0));
+		}
+
+		int n3 = (x+1)*this->num_of_cols+y;
+		// cout << "\n" << x+1 << " " << y;
+		if (validMove(loc, n3)){
+			// cout  "\nvalid 3";
+			neighbors.emplace_back(make_pair(n3,270));
+		}
+	}
+
+	int recalc_loc = this->num_of_cols*x + y;
+	// cout << "\nRecalc loc: " << recalc_loc;
+
+	// cout << "\nNeighbors are: " << neighbors.size();
+	if(neighbors.size() > 0){
+	
+		for(auto n:neighbors){
+			cout << "\nx: " << getRowCoordinate(n.first);
+			cout << "\ny: " << getColCoordinate(n.first);
+			cout << "\ntheta: " << n.second;
+		}
+		cout << "\n";
+	}
+	
+
+	//Say we have a maximum velocity limit of 10 and omega limit of 2
 	return neighbors;
 }

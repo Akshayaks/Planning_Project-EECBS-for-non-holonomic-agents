@@ -102,6 +102,18 @@ void CBS::findConflicts(HLNode& curr, int a1, int a2)
 			assert(!conflict->constraint2.empty());
 			curr.unknownConf.push_back(conflict); // edge conflict
 		}
+		else if (timestep < min_path_length - 1){
+			int loc1_next = paths[a1]->at(timestep+1).location;
+			int loc2_next = paths[a2]->at(timestep+1).location;
+			if(loc1+loc1_next == loc2 + loc2_next){
+				cout << "\n*****Found diagonal conflict!";
+				shared_ptr<Conflict> conflict(new Conflict());
+				conflict->diagonalEdgeConflict(a1, a2, loc1, loc1_next, loc2, loc2_next, timestep + 1);
+				assert(!conflict->constraint1.empty());
+				assert(!conflict->constraint2.empty());
+				curr.unknownConf.push_back(conflict); // edge conflict
+			}
+		}
 	}
 	if (paths[a1]->size() != paths[a2]->size())
 	{
@@ -1204,7 +1216,9 @@ bool CBS::solve(double _time_limit, int _cost_lowerbound, int _cost_upperbound)
 	// set timer
 	start = clock();
 
+	cout << "\nBefore CBS generate root";
 	generateRoot();
+	cout << "\nGenerated CBS root";
 
 	while (!cleanup_list.empty() && !solution_found)
 	{
@@ -1578,8 +1592,11 @@ bool CBS::generateRoot()
 	root->h_val = 0;
 	root->depth = 0;
 	findConflicts(*root);
+	cout << "\nFinished CBS find conflicts";
 	heuristic_helper.computeQuickHeuristics(*root);
+	cout << "\nCompute quick heuristics is done";
 	pushNode(root);
+	cout << "\nroot node pushed";
 	dummy_start = root;
 	if (screen >= 2) // print start and goals
 	{

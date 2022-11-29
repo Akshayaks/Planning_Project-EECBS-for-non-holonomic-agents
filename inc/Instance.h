@@ -1,7 +1,6 @@
 #pragma once
 #include"common.h"
 
-
 // Currently only works for undirected unweighted 4-nighbor grids
 class Instance 
 {
@@ -23,7 +22,7 @@ public:
 		inline bool isObstacle(int loc) const { return my_map[loc]; }
 		inline bool validMove(int curr, int next) const;
 		list<int> getNeighbors(int curr) const;
-
+		list<pair<int,double>> getPrimitives(int loc, int timestep, int theta) const;
 
 		inline int linearizeCoordinate(int row, int col) const { return ( this->num_of_cols * row + col); }
 		inline int getRowCoordinate(int id) const { return id / this->num_of_cols; }

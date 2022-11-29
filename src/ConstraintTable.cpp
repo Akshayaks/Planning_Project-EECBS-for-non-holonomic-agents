@@ -232,7 +232,7 @@ list<pair<int, int> > ConstraintTable::decodeBarrier(int x, int y, int t) const
 bool ConstraintTable::constrained(size_t loc, int t) const
 {
     assert(loc >= 0);
-    if (loc < map_size)
+    if (loc < map_size) //then it is a vertex
     {
         const auto& it = landmarks.find(t);
         if (it != landmarks.end() && it->second != loc)
@@ -253,7 +253,45 @@ bool ConstraintTable::constrained(size_t loc, int t) const
 }
 bool ConstraintTable::constrained(size_t curr_loc, size_t next_loc, int next_t) const
 {
-    return constrained(getEdgeIndex(curr_loc, next_loc), next_t);
+    // cout << "\nEdge collision checking!";
+    //same edge:
+    // cout << "Same edge id: " << getEdgeIndex(curr_loc, next_loc);
+    if(constrained(getEdgeIndex(curr_loc, next_loc), next_t)){
+        return true;
+    }
+
+    // cout << "\nDiagonal collision";
+    //apart from same edge I also need to check the diagonal edge
+    vector<int> n;
+    int sum = curr_loc + next_loc;
+    n.push_back(curr_loc-1);
+    n.push_back(curr_loc+1);
+    n.push_back(curr_loc-num_col);
+    n.push_back(curr_loc+num_col);
+
+    for(int i=0;i<n.size();i++){
+        int end = sum - n[i];
+        if(end < 0 || end == n[i]){
+            continue;
+        }
+        else{
+            size_t edge_id = (1+n[i])*map_size + end;
+            // cout << "\nChecking edge_id: " << edge_id;
+            const auto& it = ct.find(edge_id);
+            if (it == ct.end())
+            {
+                return false;
+            }
+            for (const auto& constraint: it->second) //If the constraint exists and the timestep falls in the time interval of the constraint then return true
+            {
+                if (constraint.first <= next_t && next_t < constraint.second){
+                    // cout << "\nFound diagonal collision!";
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 void ConstraintTable::copy(const ConstraintTable& other)

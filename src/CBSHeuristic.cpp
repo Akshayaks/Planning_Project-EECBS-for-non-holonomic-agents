@@ -219,8 +219,11 @@ void CBSHeuristic::computeQuickHeuristics(HLNode& node)
     //buildConflictGraph(HG, node);
     //node.distance_to_go = greedyMatching(HG, num_of_agents);
 	node.updateDistanceToGo();
+	cout << "\nUpdatedDistanceToGo";
     if (node.parent != nullptr)
+		cout << "\nParent not null";
 	    updateInadmissibleHeuristics(node); // compute inadmissible heuristics
+		cout << "\n\nUpdatedInadmissibleHeuristics";
 	// node.cost_to_go = max(node.getFVal() - node.getFHatVal(), 0);
 	// copyConflictGraph(node, *node.parent);
 }
@@ -321,12 +324,15 @@ bool CBSHeuristic::computeInformedHeuristics(ECBSNode& curr, const vector<int>& 
 			h = minimumVertexCover(HG, curr.parent->h_val, num_of_agents, num_of_CGedges);
 		break;*/
 	case heuristics_type::WDG:
+		cout << "\nBuilding WDG";
 	    int delta_g;
 		if (!buildWeightedDependencyGraph(curr, min_f_vals, HG, delta_g))
 			return false;
 		assert(delta_g >= 0);
 		// cout << curr.g_val << "+" << delta_g << endl;
+		cout << "\nGetting min vertex cover";
 		h = minimumWeightedVertexCover(HG) + delta_g;
+		cout << "\nGot min vertex cover";
 
 		break;
 	default:
@@ -596,14 +602,18 @@ bool CBSHeuristic::buildWeightedDependencyGraph(ECBSNode& node, const vector<int
 {
     delta_g = 0;
     vector<bool> counted(num_of_agents, false); // record the agents whose delta_g has been counted
+	cout << "\nInside buildWeightedDepencyGraph";
 	for (const auto& conflict : node.conflicts)
 	{
 		int a1 = min(conflict->a1, conflict->a2);
 		int a2 = max(conflict->a1, conflict->a2);
 		int idx = a1 * num_of_agents + a2;
+		cout << "\nLook up in the table";
 		auto got = lookupTable[a1][a2].find(HTableEntry(a1, a2, &node));
+		cout << "\ndone finding";
 		if (got != lookupTable[a1][a2].end()) // check the lookup table first
 		{
+			cout << "\nFound in lookup";
 			num_memoization++;
             CG[idx]  = get<0>(got->second);
             CG[a2 * num_of_agents + a1] = CG[idx];
@@ -622,6 +632,7 @@ bool CBSHeuristic::buildWeightedDependencyGraph(ECBSNode& node, const vector<int
 		}
 		else
 		{
+			cout << "\nNot found in lookup";
 			auto rst = solve2Agents(a1, a2, node);
             lookupTable[a1][a2][HTableEntry(a1, a2, &node)] = rst;
             if ((clock() - start_time) / CLOCKS_PER_SEC > time_limit) // run out of time
@@ -650,13 +661,17 @@ bool CBSHeuristic::buildWeightedDependencyGraph(ECBSNode& node, const vector<int
 	}
     for (const auto& conflict : node.unknownConf)
     {
-        int a1 = min(conflict->a1, conflict->a2);
+        cout << "\nThere is an unknown conflict";
+		int a1 = min(conflict->a1, conflict->a2);
         int a2 = max(conflict->a1, conflict->a2);
         int idx = a1 * num_of_agents + a2;
+		cout << "\nTrying to lookup";
         auto got = lookupTable[a1][a2].find(HTableEntry(a1, a2, &node));
+		cout << "\nDone finding";
         if (got != lookupTable[a1][a2].end()) // check the lookup table first
         {
-            num_memoization++;
+            cout << "\nFound in lookup";
+			num_memoization++;
             CG[idx]  = get<0>(got->second);
             CG[a2 * num_of_agents + a1] = CG[idx];
             if (!counted[a1])
@@ -674,7 +689,9 @@ bool CBSHeuristic::buildWeightedDependencyGraph(ECBSNode& node, const vector<int
         }
         else
         {
-            auto rst = solve2Agents(a1, a2, node);
+            cout << "\nNot in loopup";
+			auto rst = solve2Agents(a1, a2, node);
+			cout << "\nFinishing solve2Agents";
             lookupTable[a1][a2][HTableEntry(a1, a2, &node)] = rst;
             if ((clock() - start_time) / CLOCKS_PER_SEC > time_limit) // run out of time
             {
@@ -779,7 +796,9 @@ tuple<int, int, int> CBSHeuristic::solve2Agents(int a1, int a2, const ECBSNode& 
 	cbs.setNodeLimit(node_limit);
 
 	double runtime = (double)(clock() - start_time) / CLOCKS_PER_SEC;
+	cout << "\nBefore CBS solve for heuristic";
 	cbs.solve(time_limit - runtime, 0, MAX_COST);
+	cout << "\nCBS solver done";
 	num_solve_2agent_problems++;
 	
 	// For statistic study!!!
@@ -1130,7 +1149,9 @@ int CBSHeuristic::greedyWeightedMatching(const std::vector<int>& CG,  int cols)
 int CBSHeuristic::minimumWeightedVertexCover(const vector<int>& HG)
 {
 	clock_t t = clock();
+	cout << "\nweighted vertex cover";
 	int rst = weightedVertexCover(HG);
+	cout << "\nGot weighted vertex cover";
 	num_solve_MVC++;
 	runtime_solve_MVC += (double)(clock() - t) / CLOCKS_PER_SEC;
 	return rst;

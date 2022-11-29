@@ -59,6 +59,17 @@ public:
 		type = conflict_type::STANDARD;
 	}
 
+	void diagonalEdgeConflict(int a1, int a2, int v1, int v2, int v3, int v4, int t)
+	{
+        constraint1.clear();
+        constraint2.clear();
+		this->a1 = a1;
+		this->a2 = a2;
+		this->constraint1.emplace_back(a1, v1, v2, t, constraint_type::EDGE);
+		this->constraint2.emplace_back(a2, v3, v4, t, constraint_type::EDGE);
+		type = conflict_type::STANDARD;
+	}
+
 	void corridorConflict(int a1, int a2, int v1, int v2, int t1, int t2)
 	{
         constraint1.clear();

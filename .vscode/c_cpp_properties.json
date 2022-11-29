@@ -1,0 +1,35 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/inc",
+                "${workspaceFolder}",
+                "${default}"
+            ],
+            "defines": [
+                "${workspaceFolder}",
+                "${default}"
+            ],
+            "macFrameworkPath": [
+                "${default}"
+            ],
+            "forcedInclude": [
+                "${default}"
+            ],
+            "compileCommands": "${default}",
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "${default}",
+                "path": [
+                    "${default}"
+                ]
+            },
+            "intelliSenseMode": "${default}",
+            "cStandard": "${default}",
+            "cppStandard": "${default}",
+            "compilerPath": "${default}"
+        }
+    ],
+    "version": 4
+}

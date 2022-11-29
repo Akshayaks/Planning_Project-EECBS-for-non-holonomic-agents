@@ -30,7 +30,6 @@ Path SpaceTimeAStar::findOptimalPath(const HLNode& node, const ConstraintTable& 
 pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const ConstraintTable& initial_constraints,
                                                    const vector<Path*>& paths, int agent, int lowerbound, double w)
 {
-    // cout << "\nInside space time Astar findSuboptimalPath";
     this->w = w;
     Path path;
     num_expanded = 0;
@@ -50,13 +49,34 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     constraint_table.insert2CAT(agent, paths); //initially path is empty and hence this shouldn't give anything?
     runtime_build_CAT = (double)(clock() - t) / CLOCKS_PER_SEC;
 
+    if(agent == 0){
+        start_location = 1;
+        goal_location = 34;
+    }
+    else{
+        start_location = 2;
+        goal_location = 33;
+    }
+
+    cout << "\nStart loc: " << start_location/32 << " " << start_location % 32;
+    cout << "\nGoal loc: " << goal_location/32 << " " << goal_location % 32;
+
+    
+
     // the earliest timestep that the agent can hold its goal location. The length_min is considered here.
     auto holding_time = constraint_table.getHoldingTime(goal_location, constraint_table.length_min);
     auto static_timestep = constraint_table.getMaxTimestep() + 1; // everything is static after this timestep
     lowerbound =  max(holding_time, lowerbound);
 
     // generate start and add it to the OPEN & FOCAL list
-    auto start = new AStarNode(start_location, 0, 0, 0, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);
+    AStarNode* start;
+    if(agent == 1){
+        start = new AStarNode(start_location, 180, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);
+    }
+    else{
+        start = new AStarNode(start_location, 0, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);
+    }
+    // auto start = new AStarNode(start_location, 0, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);
 
     num_generated++;
     start->open_handle = open_list.push(start);
@@ -84,13 +104,14 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
             continue;
 
         auto next_locations = instance.getNeighbors(curr->location);
+        auto primitives = instance.getPrimitives(curr->location, curr->timestep, curr->theta);
         next_locations.emplace_back(curr->location); // Add current location also as the agent can wait there?
-        for (int next_location : next_locations)
+        for (auto next_location : primitives)
         {
             int next_timestep = curr->timestep + 1;
             if (static_timestep < next_timestep) //Do not understand this part
             { // now everything is static, so switch to space A* where we always use the same timestep
-                if (next_location == curr->location)
+                if (next_location.first == curr->location)
                 {
                     continue;
                 }
@@ -99,22 +120,28 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
 
             //change collision checking?
 
-            if (constraint_table.constrained(next_location, next_timestep) ||
-                constraint_table.constrained(curr->location, next_location, next_timestep)) // vertex and edge collision why check here?
+            if (constraint_table.constrained(next_location.first, next_timestep) ||
+                constraint_table.constrained(curr->location, next_location.first, next_timestep)) // vertex and edge collision why check here?
                 continue;
 
             // compute cost to next_id via curr node
             int next_g_val = curr->g_val + 1;
-            int next_h_val = max(lowerbound - next_g_val, my_heuristic[next_location]);
+            int gx = goal_location/32;
+            int gy = goal_location%32;
+            int nx = next_location.first/32;
+            int ny = next_location.first%32;
+            // int next_h_val = sqrt((gx-nx)^2 + (gy-ny)^2);
+            int next_h_val = max(lowerbound - next_g_val, my_heuristic[next_location.first]);
+            cout << "\nh: " << next_h_val;
             if (next_g_val + next_h_val > constraint_table.length_max)
                 continue;
             int next_internal_conflicts = curr->num_of_conflicts +
-                                          constraint_table.getNumOfConflictsForStep(curr->location, next_location, next_timestep);
+                                          constraint_table.getNumOfConflictsForStep(curr->location, next_location.first, next_timestep);
 
             // generate (maybe temporary) node
-            auto next = new AStarNode(next_location, next_g_val, next_h_val,
+            auto next = new AStarNode(next_location.first,next_location.second, next_g_val, next_h_val,
                                       curr, next_timestep, next_internal_conflicts);
-            if (next_location == goal_location && curr->location == goal_location)
+            if (next_location.first == goal_location && curr->location == goal_location)
                 next->wait_at_goal = true;
 
             // try to retrieve it from the hash table

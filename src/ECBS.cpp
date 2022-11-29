@@ -18,18 +18,24 @@ bool ECBS::solve(double time_limit, int _cost_lowerbound)
 	start = clock();
 
 	generateRoot();
+	cout << "\ngenerated root!";
 
 	while (!cleanup_list.empty() && !solution_found)
 	{
 		auto curr = selectNode();
+		cout << "\npopped current HL node";
 		if (terminate(curr))
 			return solution_found;
+		cout << "\nSolution not found yet";
 
 		if ((curr == dummy_start || curr->chosen_from == "cleanup") &&
 		     !curr->h_computed) // heuristics has not been computed yet
 		{
-            runtime = (double)(clock() - start) / CLOCKS_PER_SEC;
+            cout << "\nCurrent node chosen from cleanup";
+			runtime = (double)(clock() - start) / CLOCKS_PER_SEC;
+			cout << "\nGoing to cal inf heuristics";
             bool succ = heuristic_helper.computeInformedHeuristics(*curr, min_f_vals, time_limit - runtime);
+			cout << "\nCalculated informed heuristic";
             runtime = (double)(clock() - start) / CLOCKS_PER_SEC;
             if (!succ) // no solution, so prune this node
             {
@@ -43,13 +49,17 @@ bool ECBS::solve(double time_limit, int _cost_lowerbound)
                 continue;
 		}
 
+		cout << "\nCalling classify conflicts";
+
         classifyConflicts(*curr);
+		cout << "\nclassified conflicts";
 
 		//Expand the node
 		num_HL_expanded++;
 		curr->time_expanded = num_HL_expanded;
 		if (bypass && curr->chosen_from != "cleanup")
 		{
+			cout << "\nbypassin!";
 			bool foundBypass = true;
 			while (foundBypass)
 			{
@@ -134,9 +144,12 @@ bool ECBS::solve(double time_limit, int _cost_lowerbound)
 		}
 		else // no bypass
 		{
+			cout << "\nNo bypass!";
 			ECBSNode* child[2] = { new ECBSNode() , new ECBSNode() };
 			curr->conflict = chooseConflict(*curr);
+			cout << "\nConflict chosen";
 			addConstraints(curr, child[0], child[1]);
+			cout << "\nConstraint added";
 
 			if (screen > 1)
 				cout << "	Expand " << *curr << endl << "	on " << *(curr->conflict) << endl;
@@ -293,6 +306,7 @@ bool ECBS::generateRoot()
 		root->sum_of_costs += (int)paths[i]->size() - 1;
 		num_LL_expanded += search_engines[i]->num_expanded;
 		num_LL_generated += search_engines[i]->num_generated;
+		cout << "\n**********************One agent done*****************";
 	}
 
 	root->h_val = 0;
@@ -610,6 +624,7 @@ void ECBS::classifyConflicts(ECBSNode &node)
 	// Classify all conflicts in unknownConf
 	while (!node.unknownConf.empty())
 	{
+		cout << "\nThere are some unknown conflicts";
 		shared_ptr<Conflict> con = node.unknownConf.front();
 		int a1 = con->a1, a2 = con->a2;
 		int timestep = get<3>(con->constraint1.back());
