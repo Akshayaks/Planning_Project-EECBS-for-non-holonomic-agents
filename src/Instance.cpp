@@ -669,15 +669,15 @@ list<pair<int,double>> Instance::getPrimitives(int loc, int timestep, int theta)
 	// cout << "\nRecalc loc: " << recalc_loc;
 
 	// cout << "\nNeighbors are: " << neighbors.size();
-	if(neighbors.size() > 0){
+	// if(neighbors.size() > 0){
 	
-		for(auto n:neighbors){
-			cout << "\nx: " << getRowCoordinate(n.first);
-			cout << "\ny: " << getColCoordinate(n.first);
-			cout << "\ntheta: " << n.second;
-		}
-		cout << "\n";
-	}
+	// 	for(auto n:neighbors){
+	// 		cout << "\nx: " << getRowCoordinate(n.first);
+	// 		cout << "\ny: " << getColCoordinate(n.first);
+	// 		cout << "\ntheta: " << n.second;
+	// 	}
+	// 	cout << "\n";
+	// }
 	
 
 	//Say we have a maximum velocity limit of 10 and omega limit of 2

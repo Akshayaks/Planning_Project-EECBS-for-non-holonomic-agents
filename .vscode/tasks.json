@@ -11,7 +11,8 @@
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
                 "-I${workspaceFolder}/inc",
-                "-I /usr/lib/x86_64-linux-gnu"
+                // "-I /usr/lib/x86_64-linux-gnu",
+                "-lboost_program_options"
             ],
             "options": {
                 "cwd": "${fileDirname}"

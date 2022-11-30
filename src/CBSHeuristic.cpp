@@ -94,7 +94,8 @@ void CBSHeuristic::updateInadmissibleHeuristics(HLNode& curr)
 
 void CBSHeuristic::updateOnlineHeuristicErrors(CBSNode& curr)
 {
-    if ((inadmissible_heuristic == heuristics_type::GLOBAL ||
+    cout << "\nUpdate online heuristics errors";
+	if ((inadmissible_heuristic == heuristics_type::GLOBAL ||
          inadmissible_heuristic == heuristics_type::PATH ||
          inadmissible_heuristic == heuristics_type::LOCAL ||
          inadmissible_heuristic == heuristics_type::CONFLICT) && curr.parent != nullptr)
@@ -230,7 +231,8 @@ void CBSHeuristic::computeQuickHeuristics(HLNode& node)
 
 bool CBSHeuristic::computeInformedHeuristics(CBSNode& curr, double _time_limit)
 {
-    curr.h_computed = true;
+    cout << "\nInformed heuristics";
+	curr.h_computed = true;
 	// create conflict graph
 	start_time = clock();
 	this->time_limit = _time_limit;

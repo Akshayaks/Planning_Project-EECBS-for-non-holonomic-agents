@@ -49,14 +49,14 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     constraint_table.insert2CAT(agent, paths); //initially path is empty and hence this shouldn't give anything?
     runtime_build_CAT = (double)(clock() - t) / CLOCKS_PER_SEC;
 
-    if(agent == 0){
-        start_location = 1;
-        goal_location = 34;
-    }
-    else{
-        start_location = 2;
-        goal_location = 33;
-    }
+    // if(agent == 0){
+    //     start_location = 1;
+    //     goal_location = 34;
+    // }
+    // else{
+    //     start_location = 2;
+    //     goal_location = 33;
+    // }
 
     cout << "\nStart loc: " << start_location/32 << " " << start_location % 32;
     cout << "\nGoal loc: " << goal_location/32 << " " << goal_location % 32;
@@ -126,13 +126,14 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
 
             // compute cost to next_id via curr node
             int next_g_val = curr->g_val + 1;
-            int gx = goal_location/32;
-            int gy = goal_location%32;
-            int nx = next_location.first/32;
-            int ny = next_location.first%32;
+            // int gx = goal_location/32;
+            // int gy = goal_location%32;
+            // int nx = next_location.first/32;
+            // int ny = next_location.first%32;
             // int next_h_val = sqrt((gx-nx)^2 + (gy-ny)^2);
-            int next_h_val = max(lowerbound - next_g_val, my_heuristic[next_location.first]);
-            cout << "\nh: " << next_h_val;
+            int next_h_val = my_heuristic[next_location.first];
+            // int next_h_val = max(lowerbound - next_g_val, my_heuristic[next_location.first]);
+            // cout << "\nh: " << next_h_val;
             if (next_g_val + next_h_val > constraint_table.length_max)
                 continue;
             int next_internal_conflicts = curr->num_of_conflicts +

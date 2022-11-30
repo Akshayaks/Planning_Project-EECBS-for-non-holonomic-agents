@@ -592,30 +592,42 @@ MDD* MDDTable::findMDD(HLNode& node, int agent) const
 
 MDD * MDDTable::getMDD(HLNode& node, int id, size_t mdd_levels)
 {
+	cout << "\ninside getMDD";
 	ConstraintsHasher c(id, &node);
+	cout << "\nconstraint hashed";
 	auto got = lookupTable[c.a].find(c);
-	if (got != lookupTable[c.a].end())
-	{
-		assert((node.getName() == "CBS Node" &&  got->second->levels.size() == mdd_levels) ||
-			(node.getName() == "ECBS Node" &&  got->second->levels.size() <= mdd_levels));
-		return got->second;
-	}
-	releaseMDDMemory(id);
-	clock_t t = clock();
-	MDD * mdd = new MDD();
-	ConstraintTable ct(initial_constraints[id]);
-    ct.insert2CT(node, id);
-	if (node.getName() == "CBS Node")
-		mdd->buildMDD(ct, mdd_levels, search_engines[id]);
-	else // ECBS node
-		mdd->buildMDD(ct, search_engines[id]);
-	if (!lookupTable.empty())
-	{
-		// ConstraintsHasher c(id, &node);
-		lookupTable[c.a][c] = mdd;
-	}
-	accumulated_runtime += (double)(clock() - t) / CLOCKS_PER_SEC;
-	return mdd;
+	cout << "\nchecking lookup";
+	// if(got->first.){
+	// 	cout << "got exists";
+	// }
+
+	if (got==lookupTable[c.a].end())
+		cout<<"\n Not found" <<endl;
+	
+	// if (got != lookupTable[c.a].end())
+	// {
+	// 	cout << "\nIn lookup table";
+	// 	// assert((node.getName() == "CBS Node" &&  got->second->levels.size() == mdd_levels) ||
+	// 	// 	(node.getName() == "ECBS Node" &&  got->second->levels.size() <= mdd_levels));
+	// 	return got->second;
+	// }
+	cout << "\nCreating new MDD";
+	// releaseMDDMemory(id);
+	// clock_t t = clock();
+	// MDD * mdd = new MDD();
+	// ConstraintTable ct(initial_constraints[id]);
+    // ct.insert2CT(node, id);
+	// if (node.getName() == "CBS Node")
+	// 	mdd->buildMDD(ct, mdd_levels, search_engines[id]);
+	// else // ECBS node
+	// 	mdd->buildMDD(ct, search_engines[id]);
+	// if (!lookupTable.empty())
+	// {
+	// 	// ConstraintsHasher c(id, &node);
+	// 	lookupTable[c.a][c] = mdd;
+	// }
+	// accumulated_runtime += (double)(clock() - t) / CLOCKS_PER_SEC;
+	return nullptr;
 }
 
 

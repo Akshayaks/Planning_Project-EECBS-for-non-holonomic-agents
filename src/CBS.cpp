@@ -315,8 +315,10 @@ void CBS::computeConflictPriority(shared_ptr<Conflict>& con, CBSNode& node)
 void CBS::classifyConflicts(CBSNode &node)
 {
 	// Classify all conflicts in unknownConf
+	cout << "\n***classify unknown conflicts";
 	while (!node.unknownConf.empty())
 	{
+		cout << "\nclassifying unknown conflict";
 		shared_ptr<Conflict> con = node.unknownConf.front();
 		int a1 = con->a1, a2 = con->a2;
 		int timestep = get<3>(con->constraint1.back());
@@ -398,7 +400,7 @@ void CBS::classifyConflicts(CBSNode &node)
 
 
 	// remove conflicts that cannot be chosen, to save some memory
-	removeLowPriorityConflicts(node.conflicts);
+	// removeLowPriorityConflicts(node.conflicts);
 }
 
 void CBS::removeLowPriorityConflicts(list<shared_ptr<Conflict>>& conflicts) const
@@ -886,6 +888,7 @@ set<int> CBS::getInvalidAgents(const list<Constraint>& constraints)  // return a
 
 void CBS::printPaths() const
 {
+	cout << "\nInside print paths";
 	for (int i = 0; i < num_of_agents; i++)
 	{
 		cout << "Agent " << i << " (" << paths_found_initially[i].size() - 1 << " -->" <<
@@ -1222,6 +1225,7 @@ bool CBS::solve(double _time_limit, int _cost_lowerbound, int _cost_upperbound)
 
 	while (!cleanup_list.empty() && !solution_found)
 	{
+		cout << "\ncleanup not empty";
 		auto curr = selectNode();
 
 		if (terminate(curr))
@@ -1229,9 +1233,12 @@ bool CBS::solve(double _time_limit, int _cost_lowerbound, int _cost_upperbound)
 
 		if (PC) // priortize conflicts
 			classifyConflicts(*curr);
+		
+		cout << "\nconflict classified " << curr->h_computed;
 
 		if (!curr->h_computed) // heuristics has not been computed yet
 		{
+			cout << "\nheuristics not yet computed";
 			runtime = (double)(clock() - start) / CLOCKS_PER_SEC;
 			bool succ = heuristic_helper.computeInformedHeuristics(*curr, time_limit - runtime);
 			runtime = (double)(clock() - start) / CLOCKS_PER_SEC;
@@ -1598,8 +1605,11 @@ bool CBS::generateRoot()
 	pushNode(root);
 	cout << "\nroot node pushed";
 	dummy_start = root;
+	cout << "\ndummy start created";
+	cout << "\n" << screen;
 	if (screen >= 2) // print start and goals
 	{
+		cout << "\nPrinting paths";
 		printPaths();
 	}
 
