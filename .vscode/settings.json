@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.tcc": "cpp",
-        "deque": "cpp",
-        "vector": "cpp",
-        "iostream": "cpp"
-    },
-    "C_Cpp.errorSquiggles": "Enabled"
-}
