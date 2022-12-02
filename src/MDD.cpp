@@ -23,6 +23,7 @@ bool MDD::buildMDD(ConstraintTable& constraint_table, const SingleAgentSolver* _
 	struct Node
 	{
 		int location = -1;
+		double theta = -1;
 		int timestep = -1;
 		int h_val = -1;
 		list<Node*> parents;
@@ -54,11 +55,11 @@ bool MDD::buildMDD(ConstraintTable& constraint_table, const SingleAgentSolver* _
 			}
 		};
 		//Node() = default;
-		Node(int location, int timestep, int h_val) : location(location), timestep(timestep), h_val(h_val) {}
+		Node(int location, double theta, int timestep, int h_val) : location(location), theta(theta), timestep(timestep), h_val(h_val) {}
 	};
 	this->solver = _solver;
 	int holding_time = constraint_table.getHoldingTime(solver->goal_location, constraint_table.length_min); // the earliest timestep that the agent can hold its goal location. The length_min is considered here.
-	auto root = new Node(solver->start_location, 0, solver->my_heuristic[solver->start_location]); // Root
+	auto root = new Node(solver->start_location, 0, 0, solver->my_heuristic[solver->start_location]); // Root
 	// generate a heap that can save nodes (and a open_handle)
 	pairing_heap< Node*, compare<Node::compare_node> > open;
 	unordered_set<Node*, Node::NodeHasher, Node::eqnode> allNodes_table;
@@ -83,17 +84,17 @@ bool MDD::buildMDD(ConstraintTable& constraint_table, const SingleAgentSolver* _
 		}
 		if (curr->timestep + curr->h_val > upperbound)
 			continue;
-		auto next_locations = solver->getNextLocations(curr->location);
-		for (int next_location : next_locations) // Try every possible move. We only add backward edges in this step.
+		auto next_locations = solver->getNextLocations(curr->location,curr->theta);
+		for (auto next_location : next_locations) // Try every possible move. We only add backward edges in this step.
 		{
 			int next_timestep = curr->timestep + 1;
-			if (constraint_table.constrained(next_location, next_timestep) ||
-				constraint_table.constrained(curr->location, next_location, next_timestep))
+			if (constraint_table.constrained(next_location.first, next_timestep) ||
+				constraint_table.constrained(curr->location, next_location.first, next_timestep))
 				continue;
-			int next_h_val = solver->my_heuristic[next_location];
+			int next_h_val = solver->my_heuristic[next_location.first];
 			if (next_timestep + next_h_val > upperbound)
 				continue;
-			auto next = new Node(next_location, next_timestep, next_h_val);
+			auto next = new Node(next_location.first, next_location.second,next_timestep, next_h_val);
 			auto it = allNodes_table.find(next);
 			if (it == allNodes_table.end()) // If the child node does not exist
 			{
@@ -156,13 +157,13 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 {
     cout << "\nInside build MDD";
 	this->solver = _solver;
-    auto root = new MDDNode(solver->start_location, nullptr); // Root
+    auto root = new MDDNode(solver->start_location, 0, nullptr); // Root
 	std::queue<MDDNode*> open;
 	list<MDDNode*> closed;
 	open.push(root);
 	closed.push_back(root);
 	levels.resize(num_of_levels);
-	cout << "\nStarting Space time A*";
+	cout << "\nStarting build MDD";
 	while (!open.empty())
 	{
 		auto curr = open.front();
@@ -175,24 +176,24 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 			break;
 		}
 		// We want (g + 1)+h <= f = numOfLevels - 1, so h <= numOfLevels - g - 2. -1 because it's the bound of the children.
-		int heuristicBound = num_of_levels - curr->level - 2 + 15;
+		int heuristicBound = num_of_levels - curr->level - 2;
 		cout << "\nheuristic bound: " << heuristicBound;
-		list<int> next_locations = solver->getNextLocations(curr->location);
+		list<pair<int,double>> next_locations = solver->getNextLocations(curr->location,curr->theta);
 		cout << "\nNumber of neighbors found: " << next_locations.size();
-		for (int next_location : next_locations) // Try every possible move. We only add backward edges in this step.
+		for (auto next_location : next_locations) // Try every possible move. We only add backward edges in this step.
 		{
-			cout << "\nMy heuristic: " << solver->my_heuristic[next_location];
-			cout << "\nVertex constrained: " << ct.constrained(next_location, curr->level + 1);
-			cout << "\nEdge constrained: " << ct.constrained(curr->location, next_location, curr->level + 1);
-			if (solver->my_heuristic[next_location] <= heuristicBound &&
-				!ct.constrained(next_location, curr->level + 1) &&
-				!ct.constrained(curr->location, next_location, curr->level + 1)) // valid move
+			cout << "\nMy heuristic: " << solver->my_heuristic[next_location.first];
+			cout << "\nVertex constrained: " << ct.constrained(next_location.first, curr->level + 1);
+			cout << "\nEdge constrained: " << ct.constrained(curr->location, next_location.first, curr->level + 1);
+			if (!ct.constrained(next_location.first, curr->level + 1) &&
+				!ct.constrained(curr->location, next_location.first, curr->level + 1)) // valid move
+				// solver->my_heuristic[next_location] <= heuristicBound &&
 			{
 				auto child = closed.rbegin();
 				bool find = false;
 				for (; child != closed.rend() && ((*child)->level == curr->level + 1); ++child)
 				{
-					if ((*child)->location == next_location) // If the child node exists
+					if ((*child)->location == next_location.first) // If the child node exists
 					{
 						(*child)->parents.push_back(curr); // then add corresponding parent link and child link
 						find = true;
@@ -201,7 +202,7 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 				}
 				if (!find) // Else generate a new mdd node
 				{
-					auto childNode = new MDDNode(next_location, curr);
+					auto childNode = new MDDNode(next_location.first,next_location.second,curr);
                     childNode->cost = num_of_levels - 1;
 					open.push(childNode);
 					closed.push_back(childNode);
@@ -366,7 +367,7 @@ MDDNode* MDD::find(int location, int level) const
 MDD::MDD(const MDD & cpy) // deep copy
 {
 	levels.resize(cpy.levels.size());
-	auto root = new MDDNode(cpy.levels[0].front()->location, nullptr);
+	auto root = new MDDNode(cpy.levels[0].front()->location, cpy.levels[0].front()->theta, nullptr);
 	levels[0].push_back(root);
 	for(size_t t = 0; t < levels.size() - 1; t++)
 	{
@@ -378,7 +379,7 @@ MDD::MDD(const MDD & cpy) // deep copy
 				MDDNode* child = find((*cpyChild)->location, (*cpyChild)->level);
 				if (child == nullptr)
 				{
-					child = new MDDNode((*cpyChild)->location, (*node));
+					child = new MDDNode((*cpyChild)->location,(*cpyChild)->theta,(*node));
           child->cost = (*cpyChild)->cost;
 					levels[child->level].push_back(child);
 					(*node)->children.push_back(child);
@@ -423,7 +424,7 @@ void MDD::increaseBy(const ConstraintTable&ct, int dLevel, SingleAgentSolver* so
               !ct.constrained(it->location, newLoc, it->level + 1)) // valid move
             {
               if (node_map.find(newLoc) == node_map.end()){
-                auto newNode = new MDDNode(newLoc, node_ptr);
+                auto newNode = new MDDNode(newLoc, 0, node_ptr);
                 levels[l + 1].push_back(newNode);
                 node_map[newLoc] = newNode;
               }else{

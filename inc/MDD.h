@@ -6,9 +6,10 @@
 class MDDNode
 {
 public:
-	MDDNode(int currloc, MDDNode* parent)
+	MDDNode(int currloc, double theta, MDDNode* parent)
 	{
 		location = currloc; 
+		theta = theta;
 		if(parent == nullptr)
 			level = 0;
 		else
@@ -19,6 +20,7 @@ public:
 	}
 	MDDNode(int location, int t): location(location), level(t) {}
 	int location;
+	double theta;
 	int level;
   int cost; // minimum cost of path traversing this MDD node
 

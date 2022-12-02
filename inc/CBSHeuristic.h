@@ -204,7 +204,7 @@ private:
 
 	int screen = 0;
 	int num_of_agents;
-	vector<vector<HTable> > lookupTable;
+	vector<vector<HTable> > lookupTable; //num_agents X num_agents table with pairwise conflicts
 
 	// double sum_distance_error = 0;
 	// double sum_cost_error = 0;

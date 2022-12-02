@@ -219,7 +219,7 @@ void CBSHeuristic::computeQuickHeuristics(HLNode& node)
     //vector<bool> HG(num_of_agents * num_of_agents, false);
     //buildConflictGraph(HG, node);
     //node.distance_to_go = greedyMatching(HG, num_of_agents);
-	node.updateDistanceToGo();
+	node.updateDistanceToGo(); //Calculates number of conflicts in the current node
 	cout << "\nUpdatedDistanceToGo";
     if (node.parent != nullptr)
 		cout << "\nParent not null";
@@ -511,7 +511,7 @@ bool CBSHeuristic::buildDependenceGraph(CBSNode& node, vector<int>& CG, int& num
         if (got != lookupTable[a1][a2].end()) // check the lookup table first
         {
             CG[idx] = get<0>(got->second) > 0 ? 1 : 0;
-            CG[a2 * num_of_agents + a1] = CG[idx];
+            CG[a2 * num_of_agents + a1] = CG[idx]; //symmetric
             num_memoization++;
         }
         else
@@ -607,9 +607,9 @@ bool CBSHeuristic::buildWeightedDependencyGraph(ECBSNode& node, const vector<int
 	cout << "\nInside buildWeightedDepencyGraph";
 	for (const auto& conflict : node.conflicts)
 	{
-		int a1 = min(conflict->a1, conflict->a2);
-		int a2 = max(conflict->a1, conflict->a2);
-		int idx = a1 * num_of_agents + a2;
+		int a1 = min(conflict->a1, conflict->a2); //Assign min of agent ids as the first agent
+		int a2 = max(conflict->a1, conflict->a2); //Assign the other agent as the second agent
+		int idx = a1 * num_of_agents + a2; // This would be the flattened index in a num_agents X num_agents table
 		cout << "\nLook up in the table";
 		auto got = lookupTable[a1][a2].find(HTableEntry(a1, a2, &node));
 		cout << "\ndone finding";

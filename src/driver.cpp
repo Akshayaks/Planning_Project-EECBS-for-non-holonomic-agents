@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
 		// params for CBS improvement
 		("heuristics", po::value<string>()->default_value("Zero"), "admissible heuristics for the high-level search (Zero, CG,DG, WDG)")
-		("prioritizingConflicts", po::value<bool>()->default_value(false), "conflict prioirtization. If true, conflictSelection is used as a tie-breaking rule.")
+		("prioritizingConflicts", po::value<bool>()->default_value(true), "conflict prioirtization. If true, conflictSelection is used as a tie-breaking rule.")
 		("bypass", po::value<bool>()->default_value(true), "Bypass1")
 		("disjointSplitting", po::value<bool>()->default_value(false), "disjoint splitting")
 		("rectangleReasoning", po::value<bool>()->default_value(false), "rectangle reasoning")
@@ -165,7 +165,7 @@ int main(int argc, char** argv)
             runtime += ecbs.runtime;
             if (ecbs.solution_found)
                 break;
-            lowerbound = ecbs.getLowerBound();
+            lowerbound = ecbs.getLowerBound(); //max(current lowerbound, min f value in cleanup list)
             ecbs.randomRoot = true;
             cout << "Failed to find solutions in Run " << i << endl;
         }

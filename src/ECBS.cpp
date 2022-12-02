@@ -4,7 +4,7 @@
 bool ECBS::solve(double time_limit, int _cost_lowerbound)
 {
 	cout << "\nInside ECBS solve";
-	this->cost_lowerbound = _cost_lowerbound;
+	this->cost_lowerbound = _cost_lowerbound; //lowest f value in the open list
 	this->inadmissible_cost_lowerbound = 0;
 	this->time_limit = time_limit;
 
@@ -281,7 +281,7 @@ bool ECBS::generateRoot()
 	root->sum_of_costs = 0;
 	paths.resize(num_of_agents, nullptr);
 	min_f_vals.resize(num_of_agents);
-	mdd_helper.init(num_of_agents);
+	mdd_helper.init(num_of_agents); //Initialize MDD and CBS lookup table for the agents
 	heuristic_helper.init();
 
 	// initialize paths_found_initially
@@ -292,7 +292,7 @@ bool ECBS::generateRoot()
 
 	for (auto i : agents)
 	{
-		//search_engine can be SIPP or SpaceTimeAstar
+		//search_engine can be SIPP or SpaceTimeAstar, latter by default
 		paths_found_initially[i] = search_engines[i]->findSuboptimalPath(*root, initial_constraints[i], paths, i, 0, suboptimality);
 		if (paths_found_initially[i].first.empty())
 		{

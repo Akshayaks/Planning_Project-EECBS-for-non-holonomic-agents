@@ -1,13 +1,25 @@
 #include "SingleAgentSolver.h"
 
 
+list<pair<int,double>> SingleAgentSolver::getNextLocations(int curr,double theta) const // including itself and its neighbors
+{
+	// list<int> rst = instance.getNeighbors(curr);
+	// rst.emplace_back(curr);
+	// return rst;
+
+	list<int> rst;
+	list<pair<int,double>> neighbors = instance.getPrimitives(curr,0,theta);
+	
+	neighbors.emplace_back(make_pair(curr,theta));
+	return neighbors;	
+}
+
 list<int> SingleAgentSolver::getNextLocations(int curr) const // including itself and its neighbors
 {
 	list<int> rst = instance.getNeighbors(curr);
 	rst.emplace_back(curr);
-	return rst;
+	return rst;	
 }
-
 
 void SingleAgentSolver::compute_heuristics()
 {

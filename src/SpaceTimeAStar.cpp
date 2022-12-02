@@ -111,7 +111,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
         if (curr->timestep >= constraint_table.length_max)
             continue;
 
-        auto next_locations = instance.getNeighbors(curr->location);
+        // auto next_locations = instance.getNeighbors(curr->location);
         auto primitives = instance.getPrimitives(curr->location, curr->timestep, curr->theta);
         primitives.emplace_back(make_pair(curr->location,curr->theta)); // Add current location also as the agent can wait there?
         for (auto next_location : primitives)

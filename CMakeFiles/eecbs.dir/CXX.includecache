@@ -6,13 +6,27 @@
 
 #IncludeRegexTransform: 
 
-/home/akshaya/Downloads/EECBS/src/MDD.cpp
-MDD.h
-/home/akshaya/Downloads/EECBS/src/MDD.h
+/home/akshaya/Downloads/EECBS/src/Instance.cpp
+boost/tokenizer.hpp
+-
+algorithm
+-
+random
+-
+chrono
+-
+Instance.h
+/home/akshaya/Downloads/EECBS/src/Instance.h
+stdio.h
+-
 iostream
 -
-common.h
-/home/akshaya/Downloads/EECBS/src/common.h
+math.h
+-
+
+/home/akshaya/Downloads/EECBS/src/SpaceTimeAStar.cpp
+SpaceTimeAStar.h
+/home/akshaya/Downloads/EECBS/src/SpaceTimeAStar.h
 
 inc/CBSNode.h
 common.h
@@ -30,25 +44,19 @@ inc/common.h
 CBSNode.h
 inc/CBSNode.h
 
-inc/ECBSNode.h
-CBSNode.h
-inc/CBSNode.h
-
 inc/Instance.h
 common.h
 inc/common.h
-
-inc/MDD.h
-SingleAgentSolver.h
-inc/SingleAgentSolver.h
-ECBSNode.h
-inc/ECBSNode.h
 
 inc/SingleAgentSolver.h
 Instance.h
 inc/Instance.h
 ConstraintTable.h
 inc/ConstraintTable.h
+
+inc/SpaceTimeAStar.h
+SingleAgentSolver.h
+inc/SingleAgentSolver.h
 
 inc/common.h
 tuple
