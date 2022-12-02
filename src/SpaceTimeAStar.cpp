@@ -30,6 +30,7 @@ Path SpaceTimeAStar::findOptimalPath(const HLNode& node, const ConstraintTable& 
 pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const ConstraintTable& initial_constraints,
                                                    const vector<Path*>& paths, int agent, int lowerbound, double w)
 {
+    //low level lowerbound initially 0
     this->w = w;
     Path path;
     num_expanded = 0;
@@ -37,16 +38,22 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
 
     // build constraint table
     auto t = clock();
-    ConstraintTable constraint_table(initial_constraints);
-    constraint_table.insert2CT(node, agent); //inserts all constraints at its parents
+    ConstraintTable constraint_table(initial_constraints); //constraints empty for root node
+    constraint_table.insert2CT(node, agent); //inserts all constraints at its parents to the current node
     runtime_build_CT = (double)(clock() - t) / CLOCKS_PER_SEC;
     if (constraint_table.constrained(start_location, 0)) // Check if at the beg (t=0) start location is constrained
     {
+        cout << "\nStart location is constrained";
         return {path, 0};
     }
 
     t = clock();
-    constraint_table.insert2CAT(agent, paths); //initially path is empty and hence this shouldn't give anything?
+    //What is collision avoidance table: a dynamic lookup table: stores the location and time of every agent in 
+    // every group. Then, when an MAPF
+// solver is applied for a given group, ties between nodes with
+// the same f -value are broken in favor of the node that has
+// fewer entries in the CAT.
+    constraint_table.insert2CAT(agent, paths); //initially path is empty
     runtime_build_CAT = (double)(clock() - t) / CLOCKS_PER_SEC;
 
     // if(agent == 0){
@@ -58,8 +65,8 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     //     goal_location = 33;
     // }
 
-    cout << "\nStart loc: " << start_location/32 << " " << start_location % 32;
-    cout << "\nGoal loc: " << goal_location/32 << " " << goal_location % 32;
+    // cout << "\nStart loc: " << start_location/32 << " " << start_location % 32;
+    // cout << "\nGoal loc: " << goal_location/32 << " " << goal_location % 32;
 
     
 
@@ -97,6 +104,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
             curr->timestep >= holding_time) // the agent can hold the goal location afterward
         {
             updatePath(curr, path); //Backtrack
+            cout << "\nFound the goal in single agent planning";
             break;
         }
 
@@ -105,7 +113,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
 
         auto next_locations = instance.getNeighbors(curr->location);
         auto primitives = instance.getPrimitives(curr->location, curr->timestep, curr->theta);
-        next_locations.emplace_back(curr->location); // Add current location also as the agent can wait there?
+        primitives.emplace_back(make_pair(curr->location,curr->theta)); // Add current location also as the agent can wait there?
         for (auto next_location : primitives)
         {
             int next_timestep = curr->timestep + 1;
@@ -118,21 +126,14 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
                 next_timestep--;
             }
 
-            //change collision checking?
-
             if (constraint_table.constrained(next_location.first, next_timestep) ||
                 constraint_table.constrained(curr->location, next_location.first, next_timestep)) // vertex and edge collision why check here?
                 continue;
 
             // compute cost to next_id via curr node
             int next_g_val = curr->g_val + 1;
-            // int gx = goal_location/32;
-            // int gy = goal_location%32;
-            // int nx = next_location.first/32;
-            // int ny = next_location.first%32;
-            // int next_h_val = sqrt((gx-nx)^2 + (gy-ny)^2);
-            int next_h_val = my_heuristic[next_location.first];
-            // int next_h_val = max(lowerbound - next_g_val, my_heuristic[next_location.first]);
+            // int next_h_val = my_heuristic[next_location.first];
+            int next_h_val = max(lowerbound - next_g_val, my_heuristic[next_location.first]);
             // cout << "\nh: " << next_h_val;
             if (next_g_val + next_h_val > constraint_table.length_max)
                 continue;
@@ -150,7 +151,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
             auto it = allNodes_table.find(next);
             if (it == allNodes_table.end())
             {
-                pushNode(next);
+                pushNode(next); //push into open and focal list
                 allNodes_table.insert(next);
                 continue;
             }
@@ -164,7 +165,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
                 if (!existing_next->in_openlist) // if it is in the closed list (reopen)
                 {
                     existing_next->copy(*next);
-                    pushNode(existing_next);
+                    pushNode(existing_next); //Add it back to open and focal
                 }
                 else
                 {
