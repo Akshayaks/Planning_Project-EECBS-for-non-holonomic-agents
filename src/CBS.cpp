@@ -256,21 +256,33 @@ void CBS::computeSecondPriorityForConflict(Conflict& conflict, const HLNode& nod
 
 void CBS::computeConflictPriority(shared_ptr<Conflict>& con, CBSNode& node)
 {
+	cout << "\n*****************computing conflict priority***************************";
 	int a1 = con->a1, a2 = con->a2;
 	int timestep = get<3>(con->constraint1.back());
 	constraint_type type = get<4>(con->constraint1.back());
 	bool cardinal1 = false, cardinal2 = false;
 	MDD *mdd1 = nullptr, *mdd2 = nullptr;
-	if (timestep >= (int)paths[a1]->size())
+	if (timestep >= (int)paths[a1]->size()){
+		cout << "\nCardinal1 due to timestep";
 		cardinal1 = true;
+	}
 	else //if (!paths[a1]->at(0).is_single())
 	{
+		cout << "\nGet MDD1";
 		mdd1 = mdd_helper.getMDD(node, a1, paths[a1]->size());
 	}
 	if (timestep >= (int)paths[a2]->size())
+	{
+		cout << "\nCardinal 2 due to timestep";
 		cardinal2 = true;
+	}
 	else //if (!paths[a2]->at(0).is_single())
 	{
+		cout << "\nGet MDD2";
+		cout << "\nnode: " << typeid(node).name();
+		cout << "\nagent: " << a2;
+		cout << "\nPath size: " << paths[a2]->size();
+
 		mdd2 = mdd_helper.getMDD(node, a2, paths[a2]->size());
 	}
 

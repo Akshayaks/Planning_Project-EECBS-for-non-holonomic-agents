@@ -154,13 +154,15 @@ bool MDD::buildMDD(ConstraintTable& constraint_table, const SingleAgentSolver* _
 bool MDD::buildMDD(const ConstraintTable& ct,
         int num_of_levels, const SingleAgentSolver* _solver)
 {
-    this->solver = _solver;
+    cout << "\nInside build MDD";
+	this->solver = _solver;
     auto root = new MDDNode(solver->start_location, nullptr); // Root
 	std::queue<MDDNode*> open;
 	list<MDDNode*> closed;
 	open.push(root);
 	closed.push_back(root);
 	levels.resize(num_of_levels);
+	cout << "\nStarting Space time A*";
 	while (!open.empty())
 	{
 		auto curr = open.front();
@@ -173,10 +175,15 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 			break;
 		}
 		// We want (g + 1)+h <= f = numOfLevels - 1, so h <= numOfLevels - g - 2. -1 because it's the bound of the children.
-		int heuristicBound = num_of_levels - curr->level - 2;
+		int heuristicBound = num_of_levels - curr->level - 2 + 15;
+		cout << "\nheuristic bound: " << heuristicBound;
 		list<int> next_locations = solver->getNextLocations(curr->location);
+		cout << "\nNumber of neighbors found: " << next_locations.size();
 		for (int next_location : next_locations) // Try every possible move. We only add backward edges in this step.
 		{
+			cout << "\nMy heuristic: " << solver->my_heuristic[next_location];
+			cout << "\nVertex constrained: " << ct.constrained(next_location, curr->level + 1);
+			cout << "\nEdge constrained: " << ct.constrained(curr->location, next_location, curr->level + 1);
 			if (solver->my_heuristic[next_location] <= heuristicBound &&
 				!ct.constrained(next_location, curr->level + 1) &&
 				!ct.constrained(curr->location, next_location, curr->level + 1)) // valid move
@@ -200,10 +207,13 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 					closed.push_back(childNode);
 				}
 			}
+			cout << "\nNeighbor discarded";
 		}
 	}
-	assert(levels.back().size() == 1);
+	cout << "\nlevels size: " << levels.back().size();
+	// assert(levels.back().size() == 1);
 
+	cout << "\nBakctracking from goal";
 	// Backward
 	auto goal_node = levels.back().back();
 	for (auto parent : goal_node->parents)
@@ -227,6 +237,8 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 			}
 		}
 	}
+
+	cout << "\nDeleting useless nodes";
 
 	// Delete useless nodes (nodes who don't have any children)
 	for (auto it : closed)
@@ -595,39 +607,49 @@ MDD * MDDTable::getMDD(HLNode& node, int id, size_t mdd_levels)
 	cout << "\ninside getMDD";
 	ConstraintsHasher c(id, &node);
 	cout << "\nconstraint hashed";
+	cout << "\nLookupTable index: " << c.a;
 	auto got = lookupTable[c.a].find(c);
 	cout << "\nchecking lookup";
-	// if(got->first.){
-	// 	cout << "got exists";
-	// }
 
-	if (got==lookupTable[c.a].end())
-		cout<<"\n Not found" <<endl;
-	
-	// if (got != lookupTable[c.a].end())
-	// {
-	// 	cout << "\nIn lookup table";
-	// 	// assert((node.getName() == "CBS Node" &&  got->second->levels.size() == mdd_levels) ||
-	// 	// 	(node.getName() == "ECBS Node" &&  got->second->levels.size() <= mdd_levels));
-	// 	return got->second;
-	// }
-	cout << "\nCreating new MDD";
-	// releaseMDDMemory(id);
-	// clock_t t = clock();
-	// MDD * mdd = new MDD();
-	// ConstraintTable ct(initial_constraints[id]);
-    // ct.insert2CT(node, id);
-	// if (node.getName() == "CBS Node")
-	// 	mdd->buildMDD(ct, mdd_levels, search_engines[id]);
-	// else // ECBS node
-	// 	mdd->buildMDD(ct, search_engines[id]);
-	// if (!lookupTable.empty())
-	// {
-	// 	// ConstraintsHasher c(id, &node);
-	// 	lookupTable[c.a][c] = mdd;
-	// }
-	// accumulated_runtime += (double)(clock() - t) / CLOCKS_PER_SEC;
-	return nullptr;
+	if (got != lookupTable[c.a].end())
+	{
+		cout << "\nIn lookup table";
+		assert((node.getName() == "CBS Node" &&  got->second->levels.size() == mdd_levels) ||
+			(node.getName() == "ECBS Node" &&  got->second->levels.size() <= mdd_levels));
+		return got->second;
+	}
+	cout << "\nNot in lookup table";
+	releaseMDDMemory(id);
+	clock_t t = clock();
+	cout << "\nCreating a new MDD object";
+	MDD * mdd = new MDD();
+	cout << "\nCreating a constraint table for this agent";
+	ConstraintTable ct(initial_constraints[id]);
+	cout << "\nInserting constraint for the node into the constraint table";
+    ct.insert2CT(node, id);
+	cout << "\nBuild the MDD for the node";
+	cout << "\nNode name: " << node.getName();
+	if (node.getName() == "CBS Node"){
+		cout << "\nBuilding MDD for a CBS node";
+		mdd->buildMDD(ct, mdd_levels, search_engines[id]);
+		cout << "\nFinished building MDD";
+	}
+	else{
+		cout << "\nBuilding MDD for ECBS node";
+		mdd->buildMDD(ct, search_engines[id]);
+		cout << "\nFinished building MDD";
+	} // ECBS node
+	cout << "\nCheck if lookuptable is empty";
+	if (!lookupTable.empty())
+	{
+		// ConstraintsHasher c(id, &node);
+		cout << "\nLookupTable not empty";
+		lookupTable[c.a][c] = mdd;
+		cout << "\nAdded MDD to lookup table";
+	}
+	accumulated_runtime += (double)(clock() - t) / CLOCKS_PER_SEC;
+	cout << "\nCalculated accumulated runtime";
+	return mdd;
 }
 
 
@@ -642,6 +664,7 @@ MDD * MDDTable::getMDD(HLNode& node, int id, size_t mdd_levels)
 
 void MDDTable::releaseMDDMemory(int id)
 {
+	cout << "\nReleasing MDD memory";
 	if (id < 0 || lookupTable.empty() || (int)lookupTable[id].size() < max_num_of_mdds)
 		return;
 	int minLength = MAX_TIMESTEP;
@@ -663,6 +686,7 @@ void MDDTable::releaseMDDMemory(int id)
 			mdd++;
 		}
 	}
+	cout << "\nFinished releasing MDD memory";
 }
 
 void MDDTable::clear()
