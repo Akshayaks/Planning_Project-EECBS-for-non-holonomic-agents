@@ -1,2 +1,9 @@
 .idea
 cmake-*
+cmake_*
+CMakeCache.txt
+CMakeFiles/
+Makefile
+eecbs
+.vscode/
+.editorconfig
