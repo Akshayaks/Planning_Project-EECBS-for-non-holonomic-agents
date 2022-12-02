@@ -65,8 +65,8 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     //     goal_location = 33;
     // }
 
-    // cout << "\nStart loc: " << start_location/32 << " " << start_location % 32;
-    // cout << "\nGoal loc: " << goal_location/32 << " " << goal_location % 32;
+    cout << "Start loc: " << start_location/instance.num_of_cols << " " << start_location % instance.num_of_cols << endl;
+    cout << "Goal loc: " << goal_location/instance.num_of_cols << " " << goal_location % instance.num_of_cols << endl;
 
     
 

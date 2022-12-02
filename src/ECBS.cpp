@@ -3,7 +3,7 @@
 
 bool ECBS::solve(double time_limit, int _cost_lowerbound)
 {
-	cout << "\nInside ECBS solve";
+	cout << "\nInside ECBS solve" << endl;
 	this->cost_lowerbound = _cost_lowerbound;
 	this->inadmissible_cost_lowerbound = 0;
 	this->time_limit = time_limit;
@@ -12,7 +12,7 @@ bool ECBS::solve(double time_limit, int _cost_lowerbound)
 	{
 		string name = getSolverName();
 		name.resize(35, ' ');
-		cout << name << ": ";
+		cout << name << ": " << endl;
 	}
 	// set timer
 	start = clock();
@@ -59,7 +59,7 @@ bool ECBS::solve(double time_limit, int _cost_lowerbound)
 		curr->time_expanded = num_HL_expanded;
 		if (bypass && curr->chosen_from != "cleanup")
 		{
-			cout << "\nbypassin!";
+			cout << "\nbypassin!" << endl;
 			bool foundBypass = true;
 			while (foundBypass)
 			{
@@ -292,11 +292,12 @@ bool ECBS::generateRoot()
 
 	for (auto i : agents)
 	{
+		cout << endl << "Finding path for Agent: " << i << endl << endl;
 		//search_engine can be SIPP or SpaceTimeAstar
 		paths_found_initially[i] = search_engines[i]->findSuboptimalPath(*root, initial_constraints[i], paths, i, 0, suboptimality);
 		if (paths_found_initially[i].first.empty())
 		{
-			cerr << "The start-goal locations of agent " << i << "are not connected" << endl;
+			cerr << "The start-goal locations of agent " << i << " are not connected" << endl;
 			exit(-1);
 		}
 		paths[i] = &paths_found_initially[i].first;
@@ -306,7 +307,6 @@ bool ECBS::generateRoot()
 		root->sum_of_costs += (int)paths[i]->size() - 1;
 		num_LL_expanded += search_engines[i]->num_expanded;
 		num_LL_generated += search_engines[i]->num_generated;
-		cout << "\n**********************One agent done*****************";
 	}
 
 	root->h_val = 0;
