@@ -465,221 +465,252 @@ list<int> Instance::getNeighbors(int curr) const
 	return neighbors;
 }
 
-list<pair<int,double>> Instance::getPrimitives(int loc, int timestep, int theta) const
+// list<pair<int,double>> Instance::getPrimitives(int loc, int timestep, int theta) const
+// {
+// 	list<pair<int,double>> neighbors;
+// 	int x = getRowCoordinate(loc);
+// 	int y = getColCoordinate(loc);
+// 	// cout << this->num_of_cols;
+
+// 	if(theta < 0.1){
+// 		theta = 0;
+// 	}
+// 	// cout << "\ncurrx: " << x;
+// 	// cout << "\ncurry: " << y;
+// 	// cout << "\ntheta: " << theta;
+
+// 	neighbors.emplace_back(make_pair(loc,theta));
+
+// 	if(theta == 0){
+// 		int n1 = (x)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x < " " << y+1;
+// 		if (validMove(loc, n1)){
+// 			// // cout  "\nvalid 1";
+// 			neighbors.emplace_back(make_pair(n1,0));
+// 		}
+
+// 		int n2 = (x-1)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x-1 << " " << y+1;
+// 		if (validMove(loc, n2)){
+// 			// // cout  "\nvalid 2";
+// 			neighbors.emplace_back(make_pair(n2,45));
+// 		}
+
+// 		int n3 = (x+1)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x+1 << " " << y+1;
+// 		if (validMove(loc, n3)){
+// 			// // cout  "\nvalid 3";
+// 			neighbors.emplace_back(make_pair(n3,315));
+// 		}
+// 	}
+
+// 	else if(theta == 45){
+// 		int n1 = (x-1)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x-1 << " " << y+1;
+// 		if (validMove(loc, n1)){
+// 			// // cout  "\nvalid 1";
+// 			neighbors.emplace_back(make_pair(n1,45));
+// 		}
+
+// 		int n2 = (x-1)*this->num_of_cols+y;
+// 		// cout << "\n" << x-1 << " " << y;
+// 		if (validMove(loc, n2)){
+// 			// // cout  "\nvalid 2";
+// 			neighbors.emplace_back(make_pair(n2,90));
+// 		}
+
+// 		int n3 = (x)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x << " " << y+1;
+// 		if (validMove(loc, n3)){
+// 			// cout << "\nvlaid 3";
+// 			neighbors.emplace_back(make_pair(n3,0));
+// 		}
+// 	}
+
+// 	else if(theta == 90){
+// 		int n1 = (x-1)*this->num_of_cols+y;
+// 		// cout << "\n" << x-1 << " " << y;
+// 		if (validMove(loc, n1)){
+// 			// // cout  "\nvalid 1";
+// 			neighbors.emplace_back(make_pair(n1,90));
+// 		}
+
+// 		int n2 = (x-1)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x-1 << " " << y-1;
+// 		if (validMove(loc, n2)){
+// 			// // cout  "\nvalid 2";
+// 			neighbors.emplace_back(make_pair(n2,135));
+// 		}
+
+// 		int n3 = (x-1)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x-1 << " " << y+1;
+// 		if (validMove(loc, n3)){
+// 			// // cout  "\nvalid 3";
+// 			neighbors.emplace_back(make_pair(n3,45));
+// 		}
+// 	}
+
+// 	else if(theta == 135){
+// 		int n1 = (x-1)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x-1 << " " << y-1;
+// 		if (validMove(loc, n1)){
+// 			// cout << "\nvlaid 1";
+// 			neighbors.emplace_back(make_pair(n1,135));
+// 		}
+
+// 		int n2 = (x)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x << " " << y-1;
+// 		if (validMove(loc, n2)){
+// 			// // cout  "\nvalid 2";
+// 			neighbors.emplace_back(make_pair(n2,180));
+// 		}
+
+// 		int n3 = (x-1)*this->num_of_cols+y;
+// 		// cout << "\n" << x-1 << " " << y;
+// 		if (validMove(loc, n3)){
+// 			// // cout  "\nvalid 3";
+// 			neighbors.emplace_back(make_pair(n3,90));
+// 		}
+// 	}
+
+// 	else if(theta == 180){
+// 		int n1 = (x)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x << " " << y-1;
+// 		if (validMove(loc, n1)){
+// 			// // cout  "\nvalid 1";
+// 			neighbors.emplace_back(make_pair(n1,180));
+// 		}
+
+// 		int n2 = (x-1)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x-1 << " " << y-1;
+// 		if (validMove(loc, n2)){
+// 			// // cout  "\nvalid 2";
+// 			neighbors.emplace_back(make_pair(n2,135));
+// 		}
+
+// 		int n3 = (x+1)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x+1 << " " << y-1;
+// 		if (validMove(loc, n3)){
+// 			// // cout  "\nvalid 3";
+// 			neighbors.emplace_back(make_pair(n3,225));
+// 		}
+// 	}
+
+// 	else if(theta == 225){
+// 		int n1 = (x+1)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x+1 << " " << y-1;
+// 		if (validMove(loc, n1)){
+// 			// // cout  "\nvalid 1";
+// 			neighbors.emplace_back(make_pair(n1,225));
+// 		}
+
+// 		int n2 = (x)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x << " " << y-1;
+// 		if (validMove(loc, n2)){
+// 			// // cout  "\nvalid 2";
+// 			neighbors.emplace_back(make_pair(n2,180));
+// 		}
+
+// 		int n3 = (x+1)*this->num_of_cols+y;
+// 		// cout << "\n" << x+1 << " " << y;
+// 		if (validMove(loc, n3)){
+// 			// // cout  "\nvalid 3";
+// 			neighbors.emplace_back(make_pair(n3,270));
+// 		}
+// 	}
+
+// 	else if(theta == 270){
+// 		int n1 = (x+1)*this->num_of_cols+y;
+// 		// cout << "\n" << x+1 << " " << y;
+// 		if (validMove(loc, n1)){
+// 			// // cout  "\nvalid 1";
+// 			neighbors.emplace_back(make_pair(n1,270));
+// 		}
+
+// 		int n2 = (x+1)*this->num_of_cols+y-1;
+// 		// cout << "\n" << x+1 << " " << y-1;
+// 		if (validMove(loc, n2)){
+// 			// cout << "\nvlaid 2";
+// 			neighbors.emplace_back(make_pair(n2,225));
+// 		}
+
+// 		int n3 = (x+1)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x+1 << " " << y+1;
+// 		if (validMove(loc, n3)){
+// 			// // cout  "\nvalid 3";
+// 			neighbors.emplace_back(make_pair(n3,315));
+// 		}
+// 	}
+
+// 	else if(theta == 315){
+// 		int n1 = (x+1)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x+1 << " " << y+1;
+// 		if (validMove(loc, n1)){
+// 			// // cout  "\nvalid 1";
+// 			neighbors.emplace_back(make_pair(n1,315));
+// 		}
+
+// 		int n2 = (x)*this->num_of_cols+y+1;
+// 		// cout << "\n" << x << " " << y+1;
+// 		if (validMove(loc, n2)){
+// 			// cout  "\nvalid 2";
+// 			neighbors.emplace_back(make_pair(n2,0));
+// 		}
+
+// 		int n3 = (x+1)*this->num_of_cols+y;
+// 		// cout << "\n" << x+1 << " " << y;
+// 		if (validMove(loc, n3)){
+// 			// cout  "\nvalid 3";
+// 			neighbors.emplace_back(make_pair(n3,270));
+// 		}
+// 	}
+
+// 	int recalc_loc = this->num_of_cols*x + y;
+// 	// cout << "\nRecalc loc: " << recalc_loc;
+
+// 	// cout << "\nNeighbors are: " << neighbors.size();
+// 	// if(neighbors.size() > 0){
+	
+// 	// 	for(auto n:neighbors){
+// 	// 		cout << "\nx: " << getRowCoordinate(n.first);
+// 	// 		cout << "\ny: " << getColCoordinate(n.first);
+// 	// 		cout << "\ntheta: " << n.second;
+// 	// 	}
+// 	// 	cout << "\n";
+// 	// }
+	
+
+// 	//Say we have a maximum velocity limit of 10 and omega limit of 2
+// 	return neighbors;
+// }
+
+list<pair<int, int> > Instance::getPrimitives(int loc, int theta) const
 {
-	list<pair<int,double>> neighbors;
+	list<pair<int, int> > neighbors;
 	int x = getRowCoordinate(loc);
 	int y = getColCoordinate(loc);
-	// cout << this->num_of_cols;
 
-	if(theta < 0.1){
-		theta = 0;
-	}
-	// cout << "\ncurrx: " << x;
-	// cout << "\ncurry: " << y;
-	// cout << "\ntheta: " << theta;
-
-	neighbors.emplace_back(make_pair(loc,theta));
-
-	if(theta == 0){
-		int n1 = (x)*this->num_of_cols+y+1;
-		// cout << "\n" << x < " " << y+1;
-		if (validMove(loc, n1)){
-			// // cout  "\nvalid 1";
-			neighbors.emplace_back(make_pair(n1,0));
-		}
-
-		int n2 = (x-1)*this->num_of_cols+y+1;
-		// cout << "\n" << x-1 << " " << y+1;
-		if (validMove(loc, n2)){
-			// // cout  "\nvalid 2";
-			neighbors.emplace_back(make_pair(n2,45));
-		}
-
-		int n3 = (x+1)*this->num_of_cols+y+1;
-		// cout << "\n" << x+1 << " " << y+1;
-		if (validMove(loc, n3)){
-			// // cout  "\nvalid 3";
-			neighbors.emplace_back(make_pair(n3,315));
-		}
-	}
-
-	else if(theta == 45){
-		int n1 = (x-1)*this->num_of_cols+y+1;
-		// cout << "\n" << x-1 << " " << y+1;
-		if (validMove(loc, n1)){
-			// // cout  "\nvalid 1";
-			neighbors.emplace_back(make_pair(n1,45));
-		}
-
-		int n2 = (x-1)*this->num_of_cols+y;
-		// cout << "\n" << x-1 << " " << y;
-		if (validMove(loc, n2)){
-			// // cout  "\nvalid 2";
-			neighbors.emplace_back(make_pair(n2,90));
-		}
-
-		int n3 = (x)*this->num_of_cols+y+1;
-		// cout << "\n" << x << " " << y+1;
-		if (validMove(loc, n3)){
-			// cout << "\nvlaid 3";
-			neighbors.emplace_back(make_pair(n3,0));
-		}
-	}
-
-	else if(theta == 90){
-		int n1 = (x-1)*this->num_of_cols+y;
-		// cout << "\n" << x-1 << " " << y;
-		if (validMove(loc, n1)){
-			// // cout  "\nvalid 1";
-			neighbors.emplace_back(make_pair(n1,90));
-		}
-
-		int n2 = (x-1)*this->num_of_cols+y-1;
-		// cout << "\n" << x-1 << " " << y-1;
-		if (validMove(loc, n2)){
-			// // cout  "\nvalid 2";
-			neighbors.emplace_back(make_pair(n2,135));
-		}
-
-		int n3 = (x-1)*this->num_of_cols+y+1;
-		// cout << "\n" << x-1 << " " << y+1;
-		if (validMove(loc, n3)){
-			// // cout  "\nvalid 3";
-			neighbors.emplace_back(make_pair(n3,45));
-		}
-	}
-
-	else if(theta == 135){
-		int n1 = (x-1)*this->num_of_cols+y-1;
-		// cout << "\n" << x-1 << " " << y-1;
-		if (validMove(loc, n1)){
-			// cout << "\nvlaid 1";
-			neighbors.emplace_back(make_pair(n1,135));
-		}
-
-		int n2 = (x)*this->num_of_cols+y-1;
-		// cout << "\n" << x << " " << y-1;
-		if (validMove(loc, n2)){
-			// // cout  "\nvalid 2";
-			neighbors.emplace_back(make_pair(n2,180));
-		}
-
-		int n3 = (x-1)*this->num_of_cols+y;
-		// cout << "\n" << x-1 << " " << y;
-		if (validMove(loc, n3)){
-			// // cout  "\nvalid 3";
-			neighbors.emplace_back(make_pair(n3,90));
-		}
-	}
-
-	else if(theta == 180){
-		int n1 = (x)*this->num_of_cols+y-1;
-		// cout << "\n" << x << " " << y-1;
-		if (validMove(loc, n1)){
-			// // cout  "\nvalid 1";
-			neighbors.emplace_back(make_pair(n1,180));
-		}
-
-		int n2 = (x-1)*this->num_of_cols+y-1;
-		// cout << "\n" << x-1 << " " << y-1;
-		if (validMove(loc, n2)){
-			// // cout  "\nvalid 2";
-			neighbors.emplace_back(make_pair(n2,135));
-		}
-
-		int n3 = (x+1)*this->num_of_cols+y-1;
-		// cout << "\n" << x+1 << " " << y-1;
-		if (validMove(loc, n3)){
-			// // cout  "\nvalid 3";
-			neighbors.emplace_back(make_pair(n3,225));
-		}
-	}
-
-	else if(theta == 225){
-		int n1 = (x+1)*this->num_of_cols+y-1;
-		// cout << "\n" << x+1 << " " << y-1;
-		if (validMove(loc, n1)){
-			// // cout  "\nvalid 1";
-			neighbors.emplace_back(make_pair(n1,225));
-		}
-
-		int n2 = (x)*this->num_of_cols+y-1;
-		// cout << "\n" << x << " " << y-1;
-		if (validMove(loc, n2)){
-			// // cout  "\nvalid 2";
-			neighbors.emplace_back(make_pair(n2,180));
-		}
-
-		int n3 = (x+1)*this->num_of_cols+y;
-		// cout << "\n" << x+1 << " " << y;
-		if (validMove(loc, n3)){
-			// // cout  "\nvalid 3";
-			neighbors.emplace_back(make_pair(n3,270));
-		}
-	}
-
-	else if(theta == 270){
-		int n1 = (x+1)*this->num_of_cols+y;
-		// cout << "\n" << x+1 << " " << y;
-		if (validMove(loc, n1)){
-			// // cout  "\nvalid 1";
-			neighbors.emplace_back(make_pair(n1,270));
-		}
-
-		int n2 = (x+1)*this->num_of_cols+y-1;
-		// cout << "\n" << x+1 << " " << y-1;
-		if (validMove(loc, n2)){
-			// cout << "\nvlaid 2";
-			neighbors.emplace_back(make_pair(n2,225));
-		}
-
-		int n3 = (x+1)*this->num_of_cols+y+1;
-		// cout << "\n" << x+1 << " " << y+1;
-		if (validMove(loc, n3)){
-			// // cout  "\nvalid 3";
-			neighbors.emplace_back(make_pair(n3,315));
-		}
-	}
-
-	else if(theta == 315){
-		int n1 = (x+1)*this->num_of_cols+y+1;
-		// cout << "\n" << x+1 << " " << y+1;
-		if (validMove(loc, n1)){
-			// // cout  "\nvalid 1";
-			neighbors.emplace_back(make_pair(n1,315));
-		}
-
-		int n2 = (x)*this->num_of_cols+y+1;
-		// cout << "\n" << x << " " << y+1;
-		if (validMove(loc, n2)){
-			// cout  "\nvalid 2";
-			neighbors.emplace_back(make_pair(n2,0));
-		}
-
-		int n3 = (x+1)*this->num_of_cols+y;
-		// cout << "\n" << x+1 << " " << y;
-		if (validMove(loc, n3)){
-			// cout  "\nvalid 3";
-			neighbors.emplace_back(make_pair(n3,270));
-		}
-	}
-
-	int recalc_loc = this->num_of_cols*x + y;
-	// cout << "\nRecalc loc: " << recalc_loc;
-
-	// cout << "\nNeighbors are: " << neighbors.size();
-	// if(neighbors.size() > 0){
-	
-	// 	for(auto n:neighbors){
-	// 		cout << "\nx: " << getRowCoordinate(n.first);
-	// 		cout << "\ny: " << getColCoordinate(n.first);
-	// 		cout << "\ntheta: " << n.second;
-	// 	}
-	// 	cout << "\n";
+	// if(theta < 0.1){ // do we need this, since theta is an int?
+	// 	theta = 0;
 	// }
-	
 
-	//Say we have a maximum velocity limit of 10 and omega limit of 2
+	// staying at the current location is also a neighbor
+	neighbors.emplace_back(make_pair(loc, theta));
+
+	vector<int> thetas{theta - D_THETA, theta, theta + D_THETA};
+	int new_x, new_y, new_loc;
+	for(int angle : thetas)
+	{
+		// sin, cos reversed since x is down (row), y is right (col)
+		new_x = (int) round((double) x - sin(DEG2RAD(angle)));
+		new_y = (int) round((double) y + cos(DEG2RAD(angle)));
+		new_loc = new_x * num_of_cols + new_y;
+
+		if(validMove(loc, new_loc))
+		{
+			neighbors.emplace_back(make_pair(new_loc, angle));
+		}
+	}
+
 	return neighbors;
 }
