@@ -3,6 +3,7 @@
 
 #define D_THETA 45
 #define DEG2RAD(x) (x*(M_PI/180))
+#define WRAPTO360(x) (((x % 360) < 0) ? (x % 360) + 360 : x % 360)
 
 // Currently only works for undirected unweighted 4-nighbor grids
 class Instance 

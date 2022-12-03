@@ -697,7 +697,7 @@ list<pair<int, int> > Instance::getPrimitives(int loc, int theta) const
 	// staying at the current location is also a neighbor
 	neighbors.emplace_back(make_pair(loc, theta));
 
-	vector<int> thetas{theta - D_THETA, theta, theta + D_THETA};
+	vector<int> thetas{WRAPTO360(theta - D_THETA), theta, WRAPTO360(theta + D_THETA)};
 	int new_x, new_y, new_loc;
 	for(int angle : thetas)
 	{
