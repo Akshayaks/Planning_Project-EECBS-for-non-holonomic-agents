@@ -6,7 +6,7 @@ class LLNode // low-level node
 {
 public:
 	int location;
-	int theta; //theta to make it a differential drive setting
+	double theta; //theta to make it a differential drive setting
 	// double vel_x;
 	// double vel_phi;
 	int g_val;
@@ -65,7 +65,7 @@ public:
 
 	// LLNode() : location(0), theta(0), vel_x(0), vel_phi(0), g_val(0), h_val(0), parent(nullptr), timestep(0), num_of_conflicts(0), in_openlist(false), wait_at_goal(false) {}
 
-	LLNode(int location, int theta, int g_val, int h_val, LLNode* parent, int timestep, int num_of_conflicts = 0, bool in_openlist = false) :
+	LLNode(int location, double theta, int g_val, int h_val, LLNode* parent, int timestep, int num_of_conflicts = 0, bool in_openlist = false) :
 		location(location), theta(theta), g_val(g_val), h_val(h_val), parent(parent), timestep(timestep),
 		num_of_conflicts(num_of_conflicts), in_openlist(in_openlist), wait_at_goal(false) {}
 

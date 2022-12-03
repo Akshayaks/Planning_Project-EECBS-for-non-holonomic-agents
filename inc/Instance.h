@@ -1,9 +1,9 @@
 #pragma once
 #include"common.h"
 
-#define D_THETA 45
+#define D_THETA 45.0
 #define DEG2RAD(x) (x*(M_PI/180))
-#define WRAPTO360(x) (((x % 360) < 0) ? (x % 360) + 360 : x % 360)
+#define WRAPTO360(x) ((fmod(x, 360) < 0) ? fmod(x, 360) + 360 : fmod(x, 360))
 
 // Currently only works for undirected unweighted 4-nighbor grids
 class Instance 
@@ -26,7 +26,7 @@ public:
 		inline bool isObstacle(int loc) const { return my_map[loc]; }
 		inline bool validMove(int curr, int next) const;
 		list<int> getNeighbors(int curr) const;
-		list<pair<int, int> > getPrimitives(int loc, int theta) const;
+		list<pair<int, double> > getPrimitives(int loc, double theta) const;
 
 		inline int linearizeCoordinate(int row, int col) const { return ( this->num_of_cols * row + col); }
 		inline int getRowCoordinate(int id) const { return id / this->num_of_cols; }
@@ -47,6 +47,8 @@ public:
 		{
 			return abs(loc1.first - loc2.first) + abs(loc1.second - loc2.second);
 		}
+
+		vector<int> getBezierPathCells(int loc1, double ang1, int loc2, double ang2) const;
 
 	int getDegree(int loc) const
 	{

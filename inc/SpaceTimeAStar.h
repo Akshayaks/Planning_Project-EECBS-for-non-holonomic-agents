@@ -17,7 +17,7 @@ public:
 	AStarNode(int loc, int g_val, int h_val, LLNode* parent, int timestep, int num_of_conflicts = 0, bool in_openlist = false) :
 		LLNode(loc, g_val, h_val, parent, timestep, num_of_conflicts, in_openlist) {}
 	
-	AStarNode(int loc, int theta, int g_val, int h_val, LLNode* parent, int timestep, int num_of_conflicts = 0, bool in_openlist = false) :
+	AStarNode(int loc, double theta, int g_val, int h_val, LLNode* parent, int timestep, int num_of_conflicts = 0, bool in_openlist = false) :
 		LLNode(loc, theta, g_val, h_val, parent, timestep, num_of_conflicts, in_openlist) {}
 
 	~AStarNode() {}
