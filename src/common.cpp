@@ -4,7 +4,7 @@ std::ostream& operator<<(std::ostream& os, const Path& path)
 {
 	for (const auto& state : path)
 	{
-		os << state.location; // << "(" << state.is_single() << "),";
+		os << state.location << "," << state.theta; // << "(" << state.is_single() << "),";
 	}
 	return os;
 }
@@ -16,7 +16,7 @@ bool isSamePath(const Path& p1, const Path& p2)
 		return false;
 	for (unsigned i = 0; i < p1.size(); i++)
 	{
-		if (p1[i].location != p2[i].location)
+		if (p1[i].location != p2[i].location) //Do we want to include theta here?
 			return false;
 	}
 	return true;

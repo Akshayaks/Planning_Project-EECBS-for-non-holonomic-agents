@@ -45,13 +45,14 @@ using std::string;
 struct PathEntry
 {
 	int location = -1;
+  double theta = -1;
 	// bool single = false;
   // int mdd_width;
 
   // bool is_single() const {
   //  return mdd_width == 1;
   //}
-	PathEntry(int loc = -1) { location = loc; }
+	PathEntry(int loc = -1, double theta = -1) { location = loc; theta=theta;}
 };
 
 typedef vector<PathEntry> Path;

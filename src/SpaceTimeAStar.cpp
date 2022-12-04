@@ -49,10 +49,8 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
 
     t = clock();
     //What is collision avoidance table: a dynamic lookup table: stores the location and time of every agent in 
-    // every group. Then, when an MAPF
-// solver is applied for a given group, ties between nodes with
-// the same f -value are broken in favor of the node that has
-// fewer entries in the CAT.
+    // every group. Then, when an MAPF solver is applied for a given group, ties between nodes with
+// the same f -value are broken in favor of the node that has fewer entries in the CAT.
     constraint_table.insert2CAT(agent, paths); //initially path is empty
     runtime_build_CAT = (double)(clock() - t) / CLOCKS_PER_SEC;
 
