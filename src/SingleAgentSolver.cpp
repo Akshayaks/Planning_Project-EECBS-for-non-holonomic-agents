@@ -8,7 +8,7 @@ list<pair<int,double>> SingleAgentSolver::getNextLocations(int curr,double theta
 	// return rst;
 
 	list<int> rst;
-	list<pair<int,double>> neighbors = instance.getPrimitives(curr,0,theta);
+	list<pair<int,double>> neighbors = instance.getPrimitives(curr,theta);
 	
 	// neighbors.emplace_back(make_pair(curr,theta));
 	return neighbors;	

@@ -6,24 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/akshaya/Downloads/EECBS/src/Instance.cpp
-boost/tokenizer.hpp
--
-algorithm
--
-random
--
-chrono
--
-Instance.h
-/home/akshaya/Downloads/EECBS/src/Instance.h
-stdio.h
--
-iostream
--
-math.h
--
-
 /home/akshaya/Downloads/EECBS/src/SpaceTimeAStar.cpp
 SpaceTimeAStar.h
 /home/akshaya/Downloads/EECBS/src/SpaceTimeAStar.h
