@@ -17,6 +17,8 @@ public:
 	bool in_openlist = false;
 	bool wait_at_goal; // the action is to wait at the goal vertex or not. This is used for >length constraints
     bool is_goal = false;
+	bool in_progress = false; // flag to check if the node is a part of a longer primitive path
+	list<pair<int, double> > path_remaining; // a vector of cells consisting of the remaining long primitive path
 	// the following is used to compare nodes in the OPEN list
 	struct compare_node
 	{

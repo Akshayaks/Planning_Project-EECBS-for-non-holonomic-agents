@@ -112,10 +112,25 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
             continue;
 
         auto next_locations = instance.getNeighbors(curr->location);
-        auto primitives = instance.getPrimitives(curr->location, curr->theta);
-        // primitives.emplace_back(make_pair(curr->location,curr->theta)); // Add current location also as the agent can wait there?
-        for (auto next_location : primitives)
+        list<list<pair<int, double> > > primitives;
+        if(!curr->in_progress)
         {
+            // cout << "new primitives" << endl;
+            primitives = instance.getPrimitives(curr->location, curr->theta);
+        }
+        else // long primitive in progress, there is only one neighbor - the next cell in the path
+        {
+            primitives.push_back(list<pair<int, double> >{curr->path_remaining.front()});
+            curr->path_remaining.pop_front();
+        }
+        // primitives.emplace_back(make_pair(curr->location,curr->theta)); // Add current location also as the agent can wait there?
+        pair<int, double> next_location;
+        for (auto next_neighbor : primitives)
+        {
+            // cout << next_neighbor.size() << endl;
+            next_location = next_neighbor.front();
+            // cout << next_location.first << endl;
+
             int next_timestep = curr->timestep + 1;
             if (static_timestep < next_timestep) //Do not understand this part
             { // now everything is static, so switch to space A* where we always use the same timestep
@@ -141,8 +156,22 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
                                           constraint_table.getNumOfConflictsForStep(curr->location, next_location.first, next_timestep);
 
             // generate (maybe temporary) node
-            auto next = new AStarNode(next_location.first,next_location.second, next_g_val, next_h_val,
+            auto next = new AStarNode(next_location.first, next_location.second, next_g_val, next_h_val,
                                       curr, next_timestep, next_internal_conflicts);
+
+            if(next_neighbor.size() > 1) // new long primitive neighbor initialize
+            {
+                next->in_progress = true;
+                next->path_remaining = next_neighbor;
+                next->path_remaining.pop_front(); // 'next' is already the first cell in path (next_location) - remove it
+            }
+            else if(curr->in_progress and !curr->path_remaining.empty()) // path already in progress
+            {
+                // cout << "in progress" << endl;
+                next->in_progress = true;
+                next->path_remaining = curr->path_remaining;
+            }
+
             if (next_location.first == goal_location && curr->location == goal_location)
                 next->wait_at_goal = true;
 
