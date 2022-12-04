@@ -56,7 +56,7 @@ void SingleAgentSolver::compute_heuristics()
 	{
 		Node curr = heap.top();
 		heap.pop();
-		for (int next_location : instance.getNeighbors(curr.location))
+		for (auto next_location : instance.getNeighbors(curr.location))
 		{
 			if (my_heuristic[next_location] > curr.value + 1)
 			{
