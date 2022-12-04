@@ -176,6 +176,8 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 			break;
 		}
 		// We want (g + 1)+h <= f = numOfLevels - 1, so h <= numOfLevels - g - 2. -1 because it's the bound of the children.
+		cout << "\nnum levels: " << num_of_levels;
+		cout << "\n curr level: " << curr->level;
 		int heuristicBound = num_of_levels - curr->level - 2;
 		cout << "\nheuristic bound: " << heuristicBound;
 		list<pair<int,double>> next_locations = solver->getNextLocations(curr->location,curr->theta);
@@ -186,8 +188,8 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 			cout << "\nVertex constrained: " << ct.constrained(next_location.first, curr->level + 1);
 			cout << "\nEdge constrained: " << ct.constrained(curr->location, next_location.first, curr->level + 1);
 			if (!ct.constrained(next_location.first, curr->level + 1) &&
+			    solver->my_heuristic[next_location.first] <= heuristicBound &&
 				!ct.constrained(curr->location, next_location.first, curr->level + 1)) // valid move
-				// solver->my_heuristic[next_location] <= heuristicBound &&
 			{
 				auto child = closed.rbegin();
 				bool find = false;
@@ -414,21 +416,21 @@ void MDD::increaseBy(const ConstraintTable&ct, int dLevel, SingleAgentSolver* so
     for (auto & it: levels[l]){
       MDDNode* node_ptr = it;
 
-      auto next_locations = solver->getNextLocations(it->location);
-      for (int newLoc: next_locations)
+      auto next_locations = solver->getNextLocations(it->location,it->theta);
+      for (auto newLoc: next_locations)
         // for (int i = 0; i < 5; i++) // Try every possible move. We only add backward edges in this step.
         {
           // int newLoc = node_ptr->location + solver.moves_offset[i];
-          if (solver->my_heuristic[newLoc] <= heuristicBound &&
-              !ct.constrained(newLoc, it->level + 1) &&
-              !ct.constrained(it->location, newLoc, it->level + 1)) // valid move
+          if (solver->my_heuristic[newLoc.first] <= heuristicBound &&
+              !ct.constrained(newLoc.first, it->level + 1) &&
+              !ct.constrained(it->location, newLoc.first, it->level + 1)) // valid move
             {
-              if (node_map.find(newLoc) == node_map.end()){
-                auto newNode = new MDDNode(newLoc, 0, node_ptr);
+              if (node_map.find(newLoc.first) == node_map.end()){
+                auto newNode = new MDDNode(newLoc.first, newLoc.second, node_ptr);
                 levels[l + 1].push_back(newNode);
-                node_map[newLoc] = newNode;
+                node_map[newLoc.first] = newNode;
               }else{
-                node_map[newLoc]->parents.push_back(node_ptr);
+                node_map[newLoc.first]->parents.push_back(node_ptr);
               }
             }
         }
@@ -705,7 +707,7 @@ void MDDTable::clear()
 unordered_map<int, MDDNode*> collectMDDlevel(MDD* mdd, int i){
   unordered_map<int, MDDNode*> loc2mdd;
   for (MDDNode* it_0 : mdd->levels[i]){
-    int loc = it_0->location;
+    int loc = it_0->location+it_0->theta;
     loc2mdd[loc] = it_0;
   }
   return loc2mdd;
