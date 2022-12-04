@@ -7,11 +7,14 @@ list<pair<int,double>> SingleAgentSolver::getNextLocations(int curr,double theta
 	// rst.emplace_back(curr);
 	// return rst;
 
-	list<int> rst;
-	list<pair<int,double>> neighbors = instance.getPrimitives(curr,theta);
-	
-	// neighbors.emplace_back(make_pair(curr,theta));
-	return neighbors;	
+	list<pair<int,double>> rst;
+	list<list<pair<int, double> > > neighbors = instance.getPrimitives(curr,theta);
+	for(auto n: neighbors){
+		for(auto ni: n){
+			rst.emplace_back(ni);
+		}
+	}
+	return rst;	
 }
 
 list<int> SingleAgentSolver::getNextLocations(int curr) const // including itself and its neighbors

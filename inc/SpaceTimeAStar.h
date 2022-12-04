@@ -17,7 +17,7 @@ public:
 	AStarNode(int loc, int g_val, int h_val, LLNode* parent, int timestep, int num_of_conflicts = 0, bool in_openlist = false) :
 		LLNode(loc, g_val, h_val, parent, timestep, num_of_conflicts, in_openlist) {}
 	
-	AStarNode(int loc, int theta, int g_val, int h_val, LLNode* parent, int timestep, int num_of_conflicts = 0, bool in_openlist = false) :
+	AStarNode(int loc, double theta, int g_val, int h_val, LLNode* parent, int timestep, int num_of_conflicts = 0, bool in_openlist = false) :
 		LLNode(loc, theta, g_val, h_val, parent, timestep, num_of_conflicts, in_openlist) {}
 
 	~AStarNode() {}
@@ -43,6 +43,7 @@ public:
 			return (s1 == s2) || (s1 && s2 &&
                         s1->location == s2->location &&
                         s1->timestep == s2->timestep &&
+						s1->theta == s2->theta &&
 						s1->wait_at_goal == s2->wait_at_goal);
 		}
 	};

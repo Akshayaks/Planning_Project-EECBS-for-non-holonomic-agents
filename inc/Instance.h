@@ -26,7 +26,7 @@ public:
 		inline bool isObstacle(int loc) const { return my_map[loc]; }
 		inline bool validMove(int curr, int next) const;
 		list<int> getNeighbors(int curr) const;
-		list<pair<int,double>> getPrimitives(int loc, double theta) const;
+		list<list<pair<int, double> > > getPrimitives(int loc, double theta) const;
 
 		inline int linearizeCoordinate(int row, int col) const { return ( this->num_of_cols * row + col); }
 		inline int getRowCoordinate(int id) const { return id / this->num_of_cols; }
@@ -47,6 +47,7 @@ public:
 		{
 			return abs(loc1.first - loc2.first) + abs(loc1.second - loc2.second);
 		}
+		list<pair<int, double> > getBezierPathCells(int loc1, double ang1, int loc2, double ang2) const;
 
 	int getDegree(int loc) const
 	{

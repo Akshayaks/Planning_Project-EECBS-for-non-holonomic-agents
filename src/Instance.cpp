@@ -51,16 +51,15 @@ int Instance::randomWalk(int curr, int steps) const
 {
 	for (int walk = 0; walk < steps; walk++)
 	{
-		// list<int> l = getNeighbors(curr);
-		list<pair<int,double>> l = getPrimitives(curr,0);
-		vector<pair<int,double>> next_locations(l.cbegin(), l.cend());
+		list<int> l = getNeighbors(curr);
+		vector<int> next_locations(l.cbegin(), l.cend());
 		auto rng = std::default_random_engine{};
 		std::shuffle(std::begin(next_locations), std::end(next_locations), rng);
-		for (auto next : next_locations)
+		for (int next : next_locations)
 		{
-			if (validMove(curr, next.first))
+			if (validMove(curr, next))
 			{
-				curr = next.first;
+				curr = next;
 				break;
 			}
 		}
@@ -153,7 +152,7 @@ bool Instance::validMove(int curr, int next) const
 		return false;
 	}
 	//Change cond to max theta change and max path length?
-	return getManhattanDistance(curr, next) <= 2; 
+	return getManhattanDistance(curr, next) <= 3;
 }
 
 bool Instance::addObstacle(int obstacle)
@@ -202,12 +201,12 @@ bool Instance::isConnected(int start, int goal)
 		int curr = open.front(); open.pop();
 		if (curr == goal)
 			return true;
-		for (auto next : getPrimitives(curr,0)) //Assuming start is always from 0 degree
+		for (int next : getNeighbors(curr))
 		{
-			if (closed[next.first])
+			if (closed[next])
 				continue;
-			open.push(next.first);
-			closed[next.first] = true;
+			open.push(next);
+			closed[next] = true;
 		}
 	}
 	return false;
@@ -685,9 +684,56 @@ list<int> Instance::getNeighbors(int curr) const
 // 	return neighbors;
 // }
 
-list<pair<int, double> > Instance::getPrimitives(int loc, double theta) const
+list<pair<int, double> > Instance::getBezierPathCells(int loc1, double ang1, int loc2, double ang2) const
 {
-	list<pair<int, double> > neighbors;
+	float x0 = (float) getRowCoordinate(loc1);
+	float y0 = (float) getColCoordinate(loc1);
+	float x3 = (float) getRowCoordinate(loc2);
+	float y3 = (float) getColCoordinate(loc2);
+
+	// first control point
+	float cx1 = x0 - sin(DEG2RAD(ang1));
+	float cy1 = y0 + cos(DEG2RAD(ang1));
+	// second control point - 180 is added since 2nd control point is behind the end point
+	float cx2 = x3 - sin(DEG2RAD(WRAPTO360(ang2 + 180.0f)));
+	float cy2 = y3 + cos(DEG2RAD(WRAPTO360(ang2 + 180.0f)));
+
+	auto cubicBezier = [] (float x0, float x1, float x2, float x3, float ratio) {
+		return pow((1 - ratio), 3)*x0 + 3*pow((1 - ratio), 2)*ratio*x1 + 3*(1 - ratio)*pow(ratio, 2)*x2 + pow(ratio, 3)*x3;
+	};
+
+	vector<pair<float, float> > bezier_path;
+
+	float x, y;
+	for(float ratio = 0; ratio <= 1.001; ratio += 0.05)
+	{
+		x = cubicBezier(x0, cx1, cx2, x3, ratio);
+		y = cubicBezier(y0, cy1, cy2, y3, ratio);
+		bezier_path.push_back(make_pair(x, y));
+	}
+
+	// iterate over bezier path to see which cells does it cross
+	int last_x = (int) x0, last_y = (int) y0, next_loc;
+	list<pair<int, double> > cellPath; // {last_x * num_of_cols + last_y} - don't need to add start loc
+	for(auto pt : bezier_path)
+	{
+		tie(x, y) = pt;
+		if(((int) round(x) != last_x) or ((int) round(y) != last_y))
+		{
+			// change in cell
+			last_x = (int) round(x);
+			last_y = (int) round(y);
+			next_loc = last_x * num_of_cols + last_y;
+			cellPath.push_back(make_pair(next_loc, ang2));
+		}
+	}
+
+	return cellPath;
+}
+
+list<list<pair<int, double> > > Instance::getPrimitives(int loc, double theta) const
+{
+	list<list<pair<int, double> > > neighbors;
 	int x = getRowCoordinate(loc);
 	int y = getColCoordinate(loc);
 
@@ -696,15 +742,17 @@ list<pair<int, double> > Instance::getPrimitives(int loc, double theta) const
 	}
 
 	// staying at the current location is also a neighbor
-	neighbors.emplace_back(make_pair(loc, theta));
+	neighbors.push_back(list<pair<int, double> >{make_pair(loc, theta)});
 
 	vector<pair<double, double> > angle_step_pair{
-								make_pair(WRAPTO360(theta - D_THETA), 1),
 								make_pair(WRAPTO360(theta - D_THETA), -1),
-								// make_pair(WRAPTO360(theta - D_THETA/2), sqrt(5)), // -22.5, step = sqrt(5) --> hypot(2, 1)
-								make_pair(theta, 1),
+								make_pair(WRAPTO360(theta - D_THETA), 1),
+								make_pair(WRAPTO360(theta - D_THETA/2), -sqrt(5)), // -22.5, step = sqrt(5) --> hypot(2, 1)
+								make_pair(WRAPTO360(theta - D_THETA/2), sqrt(5)), // -22.5, step = sqrt(5) --> hypot(2, 1)
 								make_pair(theta, -1),
-								// make_pair(WRAPTO360(theta + D_THETA/2), sqrt(5)), // +22.5, step = sqrt(5) --> hypot(2, 1)
+								make_pair(theta, 1),
+								make_pair(WRAPTO360(theta + D_THETA/2), -sqrt(5)), // +22.5, step = sqrt(5) --> hypot(2, 1)
+								make_pair(WRAPTO360(theta + D_THETA/2), sqrt(5)), // +22.5, step = sqrt(5) --> hypot(2, 1)
 								make_pair(WRAPTO360(theta + D_THETA), -1),
 								make_pair(WRAPTO360(theta + D_THETA), 1)};
 	int new_x, new_y, new_loc, angle;
@@ -721,7 +769,35 @@ list<pair<int, double> > Instance::getPrimitives(int loc, double theta) const
 		{
 			if(validMove(loc, new_loc))
 			{
-				neighbors.emplace_back(make_pair(new_loc, angle));
+				neighbors.push_back(list<pair<int, double> >{make_pair(new_loc, angle)});
+			}
+		}
+		else
+		{
+			// longer primitive
+			// calculate bezier curve - get cells - check each cell transition for validity
+			if(validMove(loc, new_loc))
+			{
+				list<pair<int, double> > cellPath = getBezierPathCells(loc, theta, new_loc, angle);
+				bool valid = true;
+				cellPath.push_front(make_pair(loc, theta)); // add start loc to the path to check transition validity
+				auto it = cellPath.begin();
+				while(next(it) != cellPath.end())
+				{
+					if(!validMove(it->first, next(it)->first))
+					{
+						valid = false;
+						break;
+					}
+					++it;
+				}
+
+				if(valid) // path is valid
+				{
+					// add neighbor
+					cellPath.pop_front(); // remove start loc before adding to neighbors
+					neighbors.push_back(cellPath);
+				}
 			}
 		}
 	}

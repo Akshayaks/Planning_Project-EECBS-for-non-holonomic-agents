@@ -224,7 +224,7 @@ void CBSHeuristic::computeQuickHeuristics(HLNode& node)
     if (node.parent != nullptr)
 		cout << "\nParent not null";
 	    updateInadmissibleHeuristics(node); // compute inadmissible heuristics
-		cout << "\n\nUpdatedInadmissibleHeuristics";
+		cout << "\n\nUpdated Inadmissible Heuristics" << endl;
 	// node.cost_to_go = max(node.getFVal() - node.getFHatVal(), 0);
 	// copyConflictGraph(node, *node.parent);
 }
