@@ -29,7 +29,8 @@ public:
 		{
 			size_t loc_hash = std::hash<int>()(n->location);
 			size_t timestep_hash = std::hash<int>()(n->timestep);
-			return (loc_hash ^ (timestep_hash << 1));
+			size_t theta_hash = std::hash<double>()(n->theta);
+			return (loc_hash ^ (timestep_hash << 1) + theta_hash ^ (timestep_hash << 1));
 		}
 	};
 
