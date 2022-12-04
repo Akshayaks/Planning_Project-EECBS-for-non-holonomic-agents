@@ -111,7 +111,6 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
         if (curr->timestep >= constraint_table.length_max)
             continue;
 
-        auto next_locations = instance.getNeighbors(curr->location);
         list<list<pair<int, double> > > primitives;
         if(!curr->in_progress)
         {
@@ -247,27 +246,28 @@ int SpaceTimeAStar::getTravelTime(int start, int end, const ConstraintTable& con
             length = curr->g_val;
             break;
         }
-        list<int> next_locations = instance.getNeighbors(curr->location);
-        next_locations.emplace_back(curr->location);
-        for (int next_location : next_locations)
+        auto next_locations = instance.getPrimitives(curr->location,curr->theta);
+        // next_locations.emplace_back(curr->location);
+        for (auto next_l : next_locations)
         {
+            pair<int,double> next_location = next_l.front();
             int next_timestep = curr->timestep + 1;
             int next_g_val = curr->g_val + 1;
             if (static_timestep < next_timestep)
             {
-                if (curr->location == next_location)
+                if (curr->location == next_location.first)
                 {
                     continue;
                 }
                 next_timestep--;
             }
-            if (!constraint_table.constrained(next_location, next_timestep) &&
-                !constraint_table.constrained(curr->location, next_location, next_timestep))
+            if (!constraint_table.constrained(next_location.first, next_timestep) &&
+                !constraint_table.constrained(curr->location, next_location.first, next_timestep))
             {  // if that grid is not blocked
-                int next_h_val = compute_heuristic(next_location, end);
+                int next_h_val = compute_heuristic(next_location.first, end);
                 if (next_g_val + next_h_val >= upper_bound) // the cost of the path is larger than the upper bound
                     continue;
-                auto next = new AStarNode(next_location, next_g_val, next_h_val, nullptr, next_timestep, 0);
+                auto next = new AStarNode(next_location.first, next_location.second, next_g_val, next_h_val, nullptr, next_timestep, 0);
                 auto it = allNodes_table.find(next);
                 if (it == allNodes_table.end())
                 {  // add the newly generated node to heap and hash table

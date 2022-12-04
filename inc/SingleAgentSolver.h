@@ -112,8 +112,8 @@ public:
 	virtual string getName() const = 0;
 
 	list<pair<int,double>> getNextLocations(int curr,double theta) const; // including itself and its neighbors
-	list<int> getNextLocations(int curr) const; // including itself and its neighbors
-	list<int> getNeighbors(int curr) const { return instance.getNeighbors(curr); }
+	// list<int> getNextLocations(int curr) const; // including itself and its neighbors
+	// list<int> getNeighbors(int curr) const { return instance.getNeighbors(curr); }
 
 	// int getStartLocation() const {return instance.start_locations[agent]; }
 	// int getGoalLocation() const {return instance.goal_locations[agent]; }

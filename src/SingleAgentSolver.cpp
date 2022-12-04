@@ -3,9 +3,6 @@
 
 list<pair<int,double>> SingleAgentSolver::getNextLocations(int curr,double theta) const // including itself and its neighbors
 {
-	// list<int> rst = instance.getNeighbors(curr);
-	// rst.emplace_back(curr);
-	// return rst;
 
 	list<pair<int,double>> rst;
 	list<list<pair<int, double> > > neighbors = instance.getPrimitives(curr,theta);
@@ -17,22 +14,16 @@ list<pair<int,double>> SingleAgentSolver::getNextLocations(int curr,double theta
 	return rst;	
 }
 
-list<int> SingleAgentSolver::getNextLocations(int curr) const // including itself and its neighbors
-{
-	list<int> rst = instance.getNeighbors(curr);
-	rst.emplace_back(curr);
-	return rst;	
-}
-
 void SingleAgentSolver::compute_heuristics()
 {
 	struct Node
 	{
 		int location;
+		double theta;
 		int value;
 
 		Node() = default;
-		Node(int location, int value) : location(location), value(value) {}
+		Node(int location, double theta, int value) : location(location), theta(theta), value(value) {}
 		// the following is used to compare nodes in the OPEN list
 		struct compare_node
 		{
@@ -49,19 +40,20 @@ void SingleAgentSolver::compute_heuristics()
 	// generate a heap that can save nodes (and an open_handle)
 	boost::heap::pairing_heap< Node, boost::heap::compare<Node::compare_node> > heap;
 
-	Node root(goal_location, 0);
+	Node root(goal_location, 0, 0);
 	my_heuristic[goal_location] = 0;
 	heap.push(root);  // add root to heap
 	while (!heap.empty())
 	{
 		Node curr = heap.top();
 		heap.pop();
-		for (auto next_location : instance.getNeighbors(curr.location))
+		for (auto next_location : instance.getPrimitives(curr.location,curr.theta))
 		{
-			if (my_heuristic[next_location] > curr.value + 1)
+			pair <int,double> next_l = next_location.front();
+			if (my_heuristic[next_l.first] > curr.value + 1)
 			{
-				my_heuristic[next_location] = curr.value + 1;
-				Node next(next_location, curr.value + 1);
+				my_heuristic[next_l.first] = curr.value + 1;
+				Node next(next_l.first, next_l.second, curr.value + 1);
 				heap.push(next);
 			}
 		}

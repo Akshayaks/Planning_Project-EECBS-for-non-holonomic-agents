@@ -47,25 +47,25 @@ Instance::Instance(const string& map_fname, const string& agent_fname,
 }
 
 
-int Instance::randomWalk(int curr, int steps) const
-{
-	for (int walk = 0; walk < steps; walk++)
-	{
-		list<int> l = getNeighbors(curr);
-		vector<int> next_locations(l.cbegin(), l.cend());
-		auto rng = std::default_random_engine{};
-		std::shuffle(std::begin(next_locations), std::end(next_locations), rng);
-		for (int next : next_locations)
-		{
-			if (validMove(curr, next))
-			{
-				curr = next;
-				break;
-			}
-		}
-	}
-	return curr;
-}
+// int Instance::randomWalk(int curr, int steps) const
+// {
+// 	for (int walk = 0; walk < steps; walk++)
+// 	{
+// 		list<int> l = getNeighbors(curr);
+// 		vector<int> next_locations(l.cbegin(), l.cend());
+// 		auto rng = std::default_random_engine{};
+// 		std::shuffle(std::begin(next_locations), std::end(next_locations), rng);
+// 		for (int next : next_locations)
+// 		{
+// 			if (validMove(curr, next))
+// 			{
+// 				curr = next;
+// 				break;
+// 			}
+// 		}
+// 	}
+// 	return curr;
+// }
 
 void Instance::generateRandomAgents(int warehouse_width)
 {
@@ -192,21 +192,22 @@ bool Instance::addObstacle(int obstacle)
 
 bool Instance::isConnected(int start, int goal)
 {
-	std::queue<int> open;
+	std::queue<pair<int,double>> open;
 	vector<bool> closed(map_size, false);
-	open.push(start);
+	open.push(make_pair(start,0));
 	closed[start] = true;
 	while (!open.empty())
 	{
-		int curr = open.front(); open.pop();
-		if (curr == goal)
+		auto curr = open.front(); open.pop();
+		if (curr.first == goal)
 			return true;
-		for (int next : getNeighbors(curr))
+		for (auto next : getPrimitives(curr.first,curr.second))
 		{
-			if (closed[next])
+			pair<int, double> next_location = next.front();
+			if (closed[next_location.first])
 				continue;
-			open.push(next);
-			closed[next] = true;
+			open.push(next_location);
+			closed[next_location.first] = true;
 		}
 	}
 	return false;
