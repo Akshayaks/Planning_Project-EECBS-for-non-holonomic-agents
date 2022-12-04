@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
 		// params for CBS node selection strategies
 		("highLevelSolver", po::value<string>()->default_value("EES"), "the high-level solver (A*, A*eps, EES, NEW)")
-		("lowLevelSolver", po::value<bool>()->default_value(false), "using suboptimal solver in the low level")
+		("lowLevelSolver", po::value<bool>()->default_value(true), "using suboptimal solver in the low level")
 		("inadmissibleH", po::value<string>()->default_value("Global"), "inadmissible heuristics (Zero, Global, Path, Local, Conflict)")
 		("suboptimality", po::value<double>()->default_value(1.2), "suboptimality bound")
 

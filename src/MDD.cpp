@@ -188,7 +188,7 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 			cout << "\nVertex constrained: " << ct.constrained(next_location.first, curr->level + 1);
 			cout << "\nEdge constrained: " << ct.constrained(curr->location, next_location.first, curr->level + 1);
 			if (!ct.constrained(next_location.first, curr->level + 1) &&
-			    // solver->my_heuristic[next_location.first] <= heuristicBound &&
+			    solver->my_heuristic[next_location.first] <= heuristicBound &&
 				!ct.constrained(curr->location, next_location.first, curr->level + 1)) // valid move
 			{
 				auto child = closed.rbegin();
