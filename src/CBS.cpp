@@ -906,7 +906,7 @@ void CBS::printPaths() const
 		cout << "Agent " << i << " (" << paths_found_initially[i].size() - 1 << " -->" <<
 			paths[i]->size() - 1 << "): ";
 		for (const auto & t : *paths[i])
-			cout << t.location << "->";
+			cout << t.location << "," << t.theta << "->";
 		cout << endl;
 	}
 }

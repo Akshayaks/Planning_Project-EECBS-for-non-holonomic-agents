@@ -11,11 +11,11 @@ void SpaceTimeAStar::updatePath(const LLNode* goal, vector<PathEntry> &path)
     while (curr != nullptr)
     {
         // cout << "\nIn path: " << curr->theta;
-        PathEntry* p = new PathEntry();
-        p->location = curr->location;
-        p->theta = curr->theta;
+        PathEntry p(curr->location, curr->theta);
+        // p->location = curr->location;
+        // p->theta = curr->theta;
         // cout << "\nCreated: " << p->theta <<endl;
-        path.emplace_back(*p);
+        path.emplace_back(p);
         curr = curr->parent;
     }
     std::reverse(path.begin(),path.end());
