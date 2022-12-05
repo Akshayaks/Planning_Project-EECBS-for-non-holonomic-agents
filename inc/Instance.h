@@ -26,6 +26,7 @@ public:
 		inline bool isObstacle(int loc) const { return my_map[loc]; }
 		inline bool validMove(int curr, int next) const;
 		list<int> getNeighbors(int curr) const;
+		list<int> get_eight_Neighbors(int curr) const;
 		list<list<pair<int, double> > > getPrimitives(int loc, double theta) const;
 
 		inline int linearizeCoordinate(int row, int col) const { return ( this->num_of_cols * row + col); }

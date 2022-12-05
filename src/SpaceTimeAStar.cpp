@@ -10,20 +10,20 @@ void SpaceTimeAStar::updatePath(const LLNode* goal, vector<PathEntry> &path)
     path.reserve(curr->g_val + 1);
     while (curr != nullptr)
     {
-        cout << "\nIn path: " << curr->theta;
+        // cout << "\nIn path: " << curr->theta;
         PathEntry* p = new PathEntry();
         p->location = curr->location;
         p->theta = curr->theta;
-        cout << "\nCreated: " << p->theta <<endl;
+        // cout << "\nCreated: " << p->theta <<endl;
         path.emplace_back(*p);
         curr = curr->parent;
     }
     std::reverse(path.begin(),path.end());
 
-    cout << "\nPath found by backtracking: " << endl;
-    for(auto p:path){
-        cout << "\n" << p.location << ":" << p.theta;
-    }
+    // cout << "\nPath found by backtracking: " << endl;
+    // for(auto p:path){
+    //     cout << "\n" << p.location << ":" << p.theta;
+    // }
 }
 
 
@@ -74,6 +74,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     //     goal_location = 33;
     // }
 
+    cout << "\nAgent number: " << agent << endl;
     cout << "Start loc: " << start_location/instance.num_of_cols << " " << start_location % instance.num_of_cols << endl;
     cout << "Goal loc: " << goal_location/instance.num_of_cols << " " << goal_location % instance.num_of_cols << endl;
 
@@ -137,7 +138,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
         {
             // cout << next_neighbor.size() << endl;
             next_location = next_neighbor.front();
-            cout << "theta: " << next_location.second << endl;
+            // cout << "theta: " << next_location.second << endl;
 
             int next_timestep = curr->timestep + 1;
             if (static_timestep < next_timestep) //Do not understand this part
@@ -189,7 +190,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
             if (it == allNodes_table.end())
             {
                 pushNode(next); //push into open and focal list
-                cout << "\nPushing: " << next->theta <<endl;
+                // cout << "\nPushing: " << next->theta <<endl;
                 allNodes_table.insert(next);
                 continue;
             }
@@ -203,7 +204,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
                 if (!existing_next->in_openlist) // if it is in the closed list (reopen)
                 {
                     existing_next->copy(*next);
-                    cout << "pushing: " << existing_next->theta << endl;
+                    // cout << "pushing: " << existing_next->theta << endl;
                     pushNode(existing_next); //Add it back to open and focal
                 }
                 else

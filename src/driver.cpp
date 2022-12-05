@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 		("suboptimality", po::value<double>()->default_value(1.2), "suboptimality bound")
 
 		// params for CBS improvement
-		("heuristics", po::value<string>()->default_value("Zero"), "admissible heuristics for the high-level search (Zero, CG,DG, WDG)")
+		("heuristics", po::value<string>()->default_value("WDG"), "admissible heuristics for the high-level search (Zero, CG,DG, WDG)")
 		("prioritizingConflicts", po::value<bool>()->default_value(true), "conflict prioirtization. If true, conflictSelection is used as a tie-breaking rule.")
 		("bypass", po::value<bool>()->default_value(true), "Bypass1")
 		("disjointSplitting", po::value<bool>()->default_value(false), "disjoint splitting")
@@ -206,20 +206,27 @@ int main(int argc, char** argv)
             cbs.solve(vm["cutoffTime"].as<double>() / runs, lowerbound);
             runtime += cbs.runtime;
             if (cbs.solution_found)
-                break;
+			{
+				cout << "\n****************Solution Found**********" << endl;
+				break;
+			}
             lowerbound = cbs.getLowerBound();
             cbs.randomRoot = true;
             cout << "Failed to find solutions in Run " << i << endl;
         }
         cbs.runtime = runtime;
+		cout << "\nCBS runtime: " << runtime << endl;
         if (vm.count("output"))
             cbs.saveResults(vm["output"].as<string>(), vm["agents"].as<string>());
         if (cbs.solution_found && vm.count("outputPaths"))
             cbs.savePaths(vm["outputPaths"].as<string>());
         if (vm["stats"].as<bool>())
             cbs.saveStats(vm["output"].as<string>(), vm["agents"].as<string>());
+		cout << "\nWrote output";
         cbs.clearSearchEngines();
+		cout << "\nCleared";
     }
+	cout << "\n*********Done with lyf****";
 
 	return 0;
 

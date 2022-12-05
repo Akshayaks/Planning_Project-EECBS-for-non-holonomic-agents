@@ -636,10 +636,12 @@ bool CBSHeuristic::buildWeightedDependencyGraph(ECBSNode& node, const vector<int
 		{
 			cout << "\nNot found in lookup";
 			auto rst = solve2Agents(a1, a2, node);
+			cout << "\n solve2Agents returned";
             lookupTable[a1][a2][HTableEntry(a1, a2, &node)] = rst;
             if ((clock() - start_time) / CLOCKS_PER_SEC > time_limit) // run out of time
             {
                 runtime_build_dependency_graph += (double)(clock() - start_time) / CLOCKS_PER_SEC;
+				cout << "\nReturning false";
                 return false;
             }
             CG[idx]  = get<0>(rst);
@@ -799,8 +801,8 @@ tuple<int, int, int> CBSHeuristic::solve2Agents(int a1, int a2, const ECBSNode& 
 
 	double runtime = (double)(clock() - start_time) / CLOCKS_PER_SEC;
 	cout << "\nBefore CBS solve for heuristic";
-	cbs.solve(time_limit - runtime, 0, MAX_COST);
-	cout << "\nCBS solver done";
+	bool cbs_success = cbs.solve(time_limit - runtime, 0, MAX_COST);
+	cout << "\n*******************CBS solver done";
 	num_solve_2agent_problems++;
 	
 	// For statistic study!!!

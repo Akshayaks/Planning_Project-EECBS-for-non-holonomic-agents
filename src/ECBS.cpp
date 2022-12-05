@@ -5,7 +5,7 @@ bool ECBS::solve(double time_limit, int _cost_lowerbound)
 {
 	cout << "\nInside ECBS solve";
 	this->cost_lowerbound = _cost_lowerbound; //lowest f value in the open list
-	this->inadmissible_cost_lowerbound = 0;
+	this->inadmissible_cost_lowerbound = 0; //top fhat value
 	this->time_limit = time_limit;
 
 	if (screen > 0) // 1 or 2

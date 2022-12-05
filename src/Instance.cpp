@@ -466,6 +466,18 @@ list<int> Instance::getNeighbors(int curr) const
 	return neighbors;
 }
 
+list<int> Instance::get_eight_Neighbors(int curr) const
+{
+	list<int> neighbors;
+	int candidates[8] = {curr + 1, curr - 1, curr + num_of_cols, curr - num_of_cols, curr + num_of_cols-1, curr - num_of_cols-1,curr + num_of_cols+1, curr - num_of_cols+1};
+	for (int next : candidates)
+	{
+		if (validMove(curr, next))
+			neighbors.emplace_back(next);
+	}
+	return neighbors;
+}
+
 // list<pair<int,double>> Instance::getPrimitives(int loc, int timestep, int theta) const
 // {
 // 	list<pair<int,double>> neighbors;

@@ -167,6 +167,7 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 	while (!open.empty())
 	{
 		auto curr = open.front();
+		// cout << "\nCurr level: " << curr->level;
 		open.pop();
 		// Here we suppose all edge cost equals 1
 		if (curr->level == num_of_levels - 1)
@@ -176,17 +177,17 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 			break;
 		}
 		// We want (g + 1)+h <= f = numOfLevels - 1, so h <= numOfLevels - g - 2. -1 because it's the bound of the children.
-		cout << "\nnum levels: " << num_of_levels;
-		cout << "\n curr level: " << curr->level;
+		// cout << "\nnum levels: " << num_of_levels;
+		// cout << "\n curr level: " << curr->level;
 		int heuristicBound = num_of_levels - curr->level - 2;
-		cout << "\nheuristic bound: " << heuristicBound;
+		// cout << "\nheuristic bound: " << heuristicBound;
 		list<pair<int,double>> next_locations = solver->getNextLocations(curr->location,curr->theta);
-		cout << "\nNumber of neighbors found: " << next_locations.size();
+		// cout << "\nNumber of neighbors found: " << next_locations.size();
 		for (auto next_location : next_locations) // Try every possible move. We only add backward edges in this step.
 		{
-			cout << "\nMy heuristic: " << solver->my_heuristic[next_location.first];
-			cout << "\nVertex constrained: " << ct.constrained(next_location.first, curr->level + 1);
-			cout << "\nEdge constrained: " << ct.constrained(curr->location, next_location.first, curr->level + 1);
+			// cout << "\nMy heuristic: " << solver->my_heuristic[next_location.first];
+			// cout << "\nVertex constrained: " << ct.constrained(next_location.first, curr->level + 1);
+			// cout << "\nEdge constrained: " << ct.constrained(curr->location, next_location.first, curr->level + 1);
 			if (!ct.constrained(next_location.first, curr->level + 1) &&
 			    solver->my_heuristic[next_location.first] <= heuristicBound &&
 				!ct.constrained(curr->location, next_location.first, curr->level + 1)) // valid move
@@ -210,10 +211,11 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 					closed.push_back(childNode);
 				}
 			}
-			cout << "\nNeighbor discarded";
+			// cout << "\nNeighbor discarded";
 		}
+		// cout << "\nSize of open list: " << open.size();
 	}
-	cout << "\nlevels size: " << levels.back().size();
+	// cout << "\nlevels size: " << levels.back().size();
 	// assert(levels.back().size() == 1);
 
 	cout << "\nBakctracking from goal";

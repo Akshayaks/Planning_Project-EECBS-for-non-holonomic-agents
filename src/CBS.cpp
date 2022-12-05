@@ -1234,15 +1234,23 @@ bool CBS::solve(double _time_limit, int _cost_lowerbound, int _cost_upperbound)
 
 	cout << "\nBefore CBS generate root";
 	generateRoot();
-	cout << "\nGenerated CBS root";
+	cout << "\n********Generated CBS root";
 
 	while (!cleanup_list.empty() && !solution_found)
 	{
 		cout << "\ncleanup not empty";
 		auto curr = selectNode();
 
+		cout << "\nSelected node";
+
 		if (terminate(curr))
+		{
+			cout << "\nTerminate condition reached";
+			cout << "\nSolution found? " << solution_found << endl;
 			return solution_found;
+		}
+		
+		cout << "\nGoal not found yet";
 
 		if (PC) // priortize conflicts
 			classifyConflicts(*curr);
@@ -1254,9 +1262,12 @@ bool CBS::solve(double _time_limit, int _cost_lowerbound, int _cost_upperbound)
 			cout << "\nheuristics not yet computed";
 			runtime = (double)(clock() - start) / CLOCKS_PER_SEC;
 			bool succ = heuristic_helper.computeInformedHeuristics(*curr, time_limit - runtime);
+			cout << "\nComputed informed heuristics+++++++++++++++";
 			runtime = (double)(clock() - start) / CLOCKS_PER_SEC;
             heuristic_helper.updateOnlineHeuristicErrors(*curr);
+			cout << "\nUpdated online heuristics++++++++++++++";
             heuristic_helper.updateInadmissibleHeuristics(*curr); // compute inadmissible heuristics
+			cout << "\nUpdated inadmissible heuristics++++++++";
 			/*if (runtime > time_limit)
 			{  // timeout
 				solution_cost = -1;
@@ -1659,8 +1670,14 @@ CBS::~CBS()
 
 void CBS::clearSearchEngines()
 {
-	for (auto s : search_engines)
+	int cnt = 0;
+	for (auto s : search_engines){
+		cout << "\ndeleting " << cnt;
 		delete s;
+		cnt++;
+	}
+	cout << "\nDeleted all";
+	cout << "\nSearch engines size: " << search_engines.size();	
 	search_engines.clear();
 }
 
