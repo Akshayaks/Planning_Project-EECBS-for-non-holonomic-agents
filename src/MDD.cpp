@@ -216,7 +216,7 @@ bool MDD::buildMDD(const ConstraintTable& ct,
 		// cout << "\nSize of open list: " << open.size();
 	}
 	// cout << "\nlevels size: " << levels.back().size();
-	// assert(levels.back().size() == 1);
+	assert(levels.back().size() == 1);
 
 	cout << "\nBakctracking from goal";
 	// Backward
@@ -403,7 +403,7 @@ MDD::MDD(const MDD & cpy) // deep copy
 
 MDD::~MDD()
 {
-	clear();
+	// clear();
 }
 
 void MDD::increaseBy(const ConstraintTable&ct, int dLevel, SingleAgentSolver* solver){
@@ -709,7 +709,7 @@ void MDDTable::clear()
 unordered_map<int, MDDNode*> collectMDDlevel(MDD* mdd, int i){
   unordered_map<int, MDDNode*> loc2mdd;
   for (MDDNode* it_0 : mdd->levels[i]){
-    int loc = it_0->location+it_0->theta;
+    int loc = it_0->location; //Had plus theta here
     loc2mdd[loc] = it_0;
   }
   return loc2mdd;

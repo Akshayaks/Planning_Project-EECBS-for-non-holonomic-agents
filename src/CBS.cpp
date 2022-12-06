@@ -278,10 +278,6 @@ void CBS::computeConflictPriority(shared_ptr<Conflict>& con, CBSNode& node)
 	}
 	else //if (!paths[a2]->at(0).is_single())
 	{
-		cout << "\nGet MDD2";
-		cout << "\nnode: " << typeid(node).name();
-		cout << "\nagent: " << a2;
-		cout << "\nPath size: " << paths[a2]->size();
 
 		mdd2 = mdd_helper.getMDD(node, a2, paths[a2]->size());
 	}
@@ -335,12 +331,13 @@ void CBS::classifyConflicts(CBSNode &node)
 		int a1 = con->a1, a2 = con->a2;
 		int timestep = get<3>(con->constraint1.back());
 		constraint_type type = get<4>(con->constraint1.back());
-		//int a, loc1, loc2, timestep;
-		//constraint_type type;
-		//tie(a, loc1, loc2, timestep, type) = con->constraint1.back();
+		
 		node.unknownConf.pop_front();
 
 		computeConflictPriority(con, node);
+		// // con->priority = conflict_priority::NON;
+		// // con->secondary_priority = 0;
+		// node.conflicts.push_back(con);
 
 		if (con->priority == conflict_priority::CARDINAL && heuristic_helper.type == heuristics_type::ZERO)
 		{
@@ -375,44 +372,41 @@ void CBS::classifyConflicts(CBSNode &node)
 		}
 
 		// Corridor reasoning
-		if (corridor_reasoning)
-		{
-			auto corridor = corridor_helper.run(con, paths, node);
-			if (corridor != nullptr)
-			{
-				corridor->priority = con->priority;
-				computeSecondPriorityForConflict(*corridor, node);
-				node.conflicts.push_back(corridor);
-				continue;
-			}
-		}
+		// if (corridor_reasoning)
+		// {
+		// 	auto corridor = corridor_helper.run(con, paths, node);
+		// 	if (corridor != nullptr)
+		// 	{
+		// 		corridor->priority = con->priority;
+		// 		computeSecondPriorityForConflict(*corridor, node);
+		// 		node.conflicts.push_back(corridor);
+		// 		continue;
+		// 	}
+		// }
 
 
 		// Rectangle reasoning
-		if (rectangle_reasoning &&
-			(int)paths[con->a1]->size() > timestep &&
-			(int)paths[con->a2]->size() > timestep && //conflict happens before both agents reach their goal locations
-			type == constraint_type::VERTEX) // vertex conflict
-		{
-			auto mdd1 = mdd_helper.getMDD(node, a1, paths[a1]->size());
-			auto mdd2 = mdd_helper.getMDD(node, a2, paths[a2]->size());
-			auto rectangle = rectangle_helper.run(paths, timestep, a1, a2, mdd1, mdd2);
-			if (rectangle != nullptr)
-			{
-				computeSecondPriorityForConflict(*rectangle, node);
-				node.conflicts.push_back(rectangle);
-				continue;
-			}
-		}
+		// if (rectangle_reasoning &&
+		// 	(int)paths[con->a1]->size() > timestep &&
+		// 	(int)paths[con->a2]->size() > timestep && //conflict happens before both agents reach their goal locations
+		// 	type == constraint_type::VERTEX) // vertex conflict
+		// {
+		// 	auto mdd1 = mdd_helper.getMDD(node, a1, paths[a1]->size());
+		// 	auto mdd2 = mdd_helper.getMDD(node, a2, paths[a2]->size());
+		// 	auto rectangle = rectangle_helper.run(paths, timestep, a1, a2, mdd1, mdd2);
+		// 	if (rectangle != nullptr)
+		// 	{
+		// 		computeSecondPriorityForConflict(*rectangle, node);
+		// 		node.conflicts.push_back(rectangle);
+		// 		continue;
+		// 	}
+		// }
 
 		computeSecondPriorityForConflict(*con, node);
 		node.conflicts.push_back(con);
 	}
-
-
-
 	// remove conflicts that cannot be chosen, to save some memory
-	// removeLowPriorityConflicts(node.conflicts);
+	removeLowPriorityConflicts(node.conflicts);
 }
 
 void CBS::removeLowPriorityConflicts(list<shared_ptr<Conflict>>& conflicts) const
@@ -1672,13 +1666,14 @@ void CBS::clearSearchEngines()
 {
 	int cnt = 0;
 	for (auto s : search_engines){
-		cout << "\ndeleting " << cnt;
+		// cout << "\ndeleting " << cnt;
 		delete s;
 		cnt++;
 	}
-	cout << "\nDeleted all";
-	cout << "\nSearch engines size: " << search_engines.size();	
+	// cout << "\nDeleted all";
+	// cout << "\nSearch engines size: " << search_engines.size();	
 	search_engines.clear();
+	// cout << "\ncleared search_engines";
 }
 
 
