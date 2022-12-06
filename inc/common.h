@@ -53,7 +53,7 @@ struct PathEntry
   //  return mdd_width == 1;
   //}
 	PathEntry(int loc = -1) { location = loc;}
-  PathEntry(int loc, double theta) {location = loc; theta = theta;}
+  PathEntry(int loc, double ang) {location = loc; theta = ang;}
 };
 
 typedef vector<PathEntry> Path;
