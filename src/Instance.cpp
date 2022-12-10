@@ -151,6 +151,26 @@ bool Instance::validMove(int curr, int next) const
 		// cout << "\nObstacle!";
 		return false;
 	}
+	if(getManhattanDistance(curr,next) == 2){
+		vector<int> n;
+		int sum = curr + next;
+		n.push_back(curr-1);
+		n.push_back(curr+1);
+		n.push_back(curr-num_of_cols);
+		n.push_back(curr+num_of_cols);
+
+		for(int i=0;i<n.size();i++){
+			int end = sum - n[i];
+			if(end < 0 || end > map_size || end == n[i] || n[i] < 0 || n[i] > map_size){
+				continue;
+			}
+			else{
+				if(my_map[n[i]] && my_map[end]){
+					return false;
+				}
+			}
+		}
+	}
 	//Change cond to max theta change and max path length?
 	return getManhattanDistance(curr, next) <= 3;
 }

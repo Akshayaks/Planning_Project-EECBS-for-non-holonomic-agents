@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 		("suboptimality", po::value<double>()->default_value(1.2), "suboptimality bound")
 
 		// params for CBS improvement
-		("heuristics", po::value<string>()->default_value("Zero"), "admissible heuristics for the high-level search (Zero, CG,DG, WDG)")
+		("heuristics", po::value<string>()->default_value("WDG"), "admissible heuristics for the high-level search (Zero, CG,DG, WDG)")
 		("prioritizingConflicts", po::value<bool>()->default_value(true), "conflict prioirtization. If true, conflictSelection is used as a tie-breaking rule.")
 		("bypass", po::value<bool>()->default_value(true), "Bypass1")
 		("disjointSplitting", po::value<bool>()->default_value(false), "disjoint splitting")
