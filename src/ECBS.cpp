@@ -18,12 +18,12 @@ bool ECBS::solve(double time_limit, int _cost_lowerbound)
 	start = clock();
 
 	generateRoot();
-	cout << "\ngenerated root!";
+	// cout << "\ngenerated root!";
 
 	while (!cleanup_list.empty() && !solution_found)
 	{
 		auto curr = selectNode();
-		cout << "\npopped current HL node";
+		// cout << "\npopped current HL node";
 		if (terminate(curr))
 			return solution_found;
 		cout << "\nSolution not found yet";
@@ -280,6 +280,7 @@ bool ECBS::generateRoot()
 	root->g_val = 0;
 	root->sum_of_costs = 0;
 	paths.resize(num_of_agents, nullptr);
+	cout << "\nNumber of agents in ECBS: " << num_of_agents << endl;
 	min_f_vals.resize(num_of_agents);
 	mdd_helper.init(num_of_agents); //Initialize MDD and CBS lookup table for the agents
 	heuristic_helper.init();
