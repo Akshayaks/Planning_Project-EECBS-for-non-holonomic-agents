@@ -146,9 +146,7 @@ bool Instance::validMove(int curr, int next) const
 		// cout <<"\nOut of the map!";
 		return false;
 	}
-	if (my_map[next])
-	{
-		// cout << "\nObstacle!";
+	if(my_map[next]){
 		return false;
 	}
 	if(getManhattanDistance(curr,next) == 2){
@@ -158,14 +156,18 @@ bool Instance::validMove(int curr, int next) const
 		n.push_back(curr+1);
 		n.push_back(curr-num_of_cols);
 		n.push_back(curr+num_of_cols);
+<<<<<<< HEAD
 		cout << "curr: " << getRowCoordinate(curr) << " " << getColCoordinate(curr) << endl;
 		cout << "next: " << getRowCoordinate(next) << " " << getColCoordinate(next) << endl;
+=======
+>>>>>>> ce69353ea619b082c42eb148c8b58ae8aa7b07d6
 
 		for(int i=0;i<n.size();i++){
 			int end = sum - n[i];
 			if(end < 0 || end > map_size || end == n[i] || n[i] < 0 || n[i] > map_size){
 				continue;
 			}
+<<<<<<< HEAD
 			if(getManhattanDistance(n[i],end) > 2){
 				continue;
 			}
@@ -175,6 +177,10 @@ bool Instance::validMove(int curr, int next) const
 				if(my_map[n[i]] && my_map[end]){
 					cout << "\nCannot go through";
 					
+=======
+			else{
+				if(my_map[n[i]] && my_map[end]){
+>>>>>>> ce69353ea619b082c42eb148c8b58ae8aa7b07d6
 					return false;
 				}
 			}

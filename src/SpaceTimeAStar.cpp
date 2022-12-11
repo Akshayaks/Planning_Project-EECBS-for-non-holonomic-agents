@@ -67,12 +67,12 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     runtime_build_CAT = (double)(clock() - t) / CLOCKS_PER_SEC;
 
     // if(agent == 0){
-    //     start_location = 1;
-    //     goal_location = 34;
+    //     start_location = 0;
+    //     goal_location = 13;
     // }
     // else{
-    //     start_location = 2;
-    //     goal_location = 33;
+    //     start_location = 24;
+    //     goal_location = 12;
     // }
 
     cout << "\nAgent number: " << agent << endl;
@@ -89,7 +89,7 @@ pair<Path, int> SpaceTimeAStar::findSuboptimalPath(const HLNode& node, const Con
     // generate start and add it to the OPEN & FOCAL list
     // AStarNode* start;
     // if(agent == 1){
-    //     start = new AStarNode(start_location, 180, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);
+    //     start = new AStarNode(start_location, 90, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);
     // }
     // else{
     //     start = new AStarNode(start_location, 0, 0, max(lowerbound, my_heuristic[start_location]), nullptr, 0, 0);

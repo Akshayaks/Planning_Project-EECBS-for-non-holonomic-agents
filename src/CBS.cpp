@@ -372,17 +372,17 @@ void CBS::classifyConflicts(CBSNode &node)
 		}
 
 		// Corridor reasoning
-		// if (corridor_reasoning)
-		// {
-		// 	auto corridor = corridor_helper.run(con, paths, node);
-		// 	if (corridor != nullptr)
-		// 	{
-		// 		corridor->priority = con->priority;
-		// 		computeSecondPriorityForConflict(*corridor, node);
-		// 		node.conflicts.push_back(corridor);
-		// 		continue;
-		// 	}
-		// }
+		if (corridor_reasoning)
+		{
+			auto corridor = corridor_helper.run(con, paths, node);
+			if (corridor != nullptr)
+			{
+				corridor->priority = con->priority;
+				computeSecondPriorityForConflict(*corridor, node);
+				node.conflicts.push_back(corridor);
+				continue;
+			}
+		}
 
 
 		// Rectangle reasoning
@@ -1543,6 +1543,7 @@ CBS::CBS(const Instance& instance, bool sipp, int screen) :
 vector<int> CBS::shuffleAgents() const
 {
 	vector<int> agents(num_of_agents);
+	cout << "\nNumber of agents in shuffle: " << num_of_agents;
 	for (int i = 0; i < num_of_agents; i++)
 	{
 		agents[i] = i;

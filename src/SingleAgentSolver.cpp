@@ -68,19 +68,19 @@ void SingleAgentSolver::compute_heuristics()
 			}
 		}
 	}
-	cout << "\n*********************Computed my heuristic*******************************" << endl;
-	int k = 0;
-	for(int i = 0; i < 32; i++){
-		for(int j = 0; j < 32; j++){
-			if(my_heuristic[k] > 90){
-				cout << "xx" << "  ";
-			}
-			else{
-				cout << my_heuristic[k] << "  ";
-			}
+	// cout << "\n*********************Computed my heuristic*******************************" << endl;
+	// int k = 0;
+	// for(int i = 0; i < 32; i++){
+	// 	for(int j = 0; j < 32; j++){
+	// 		if(my_heuristic[k] > 90){
+	// 			cout << "xx" << "  ";
+	// 		}
+	// 		else{
+	// 			cout << my_heuristic[k] << "  ";
+	// 		}
 			
-			k++;
-		}
-		cout << "\n";
-	}
+	// 		k++;
+	// 	}
+	// 	cout << "\n";
+	// }
 }

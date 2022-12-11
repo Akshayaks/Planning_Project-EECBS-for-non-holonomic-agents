@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 		("bypass", po::value<bool>()->default_value(true), "Bypass1")
 		("disjointSplitting", po::value<bool>()->default_value(false), "disjoint splitting")
 		("rectangleReasoning", po::value<bool>()->default_value(false), "rectangle reasoning")
-		("corridorReasoning", po::value<bool>()->default_value(false), "corridor reasoning")
+		("corridorReasoning", po::value<bool>()->default_value(true), "corridor reasoning")
 		("targetReasoning", po::value<bool>()->default_value(true), "target reasoning")
 		("sipp", po::value<bool>()->default_value(0), "using SIPPS as the low-level solver")
 		("restart", po::value<int>()->default_value(0), "rapid random restart times")
@@ -134,6 +134,7 @@ int main(int argc, char** argv)
 	// load the instance
 	Instance instance(vm["map"].as<string>(), vm["agents"].as<string>(),
 		vm["agentNum"].as<int>()); //While creating the map, the obstacles are being added at random!
+	cout << "Number of agents: " << vm["agentNum"].as<int>() <<endl;
 
 	srand(0);
 	int runs = 1 + vm["restart"].as<int>();
@@ -141,93 +142,128 @@ int main(int argc, char** argv)
     // initialize the solver
 	if (vm["lowLevelSolver"].as<bool>())
     {
-        ECBS ecbs(instance, vm["sipp"].as<bool>(), vm["screen"].as<int>());
-        ecbs.setPrioritizeConflicts(vm["prioritizingConflicts"].as<bool>());
-        ecbs.setDisjointSplitting(vm["disjointSplitting"].as<bool>());
-        ecbs.setBypass(vm["bypass"].as<bool>());
-        ecbs.setRectangleReasoning(vm["rectangleReasoning"].as<bool>());
-        ecbs.setCorridorReasoning(vm["corridorReasoning"].as<bool>());
-        ecbs.setHeuristicType(h, h_hat);
-        ecbs.setTargetReasoning(vm["targetReasoning"].as<bool>());
-        ecbs.setMutexReasoning(false);
-        ecbs.setConflictSelectionRule(conflict);
-        ecbs.setNodeSelectionRule(n);
-        ecbs.setSavingStats(vm["stats"].as<bool>());
-        ecbs.setHighLevelSolver(s, vm["suboptimality"].as<double>());
-        //////////////////////////////////////////////////////////////////////
-        // run
-        double runtime = 0;
-        int lowerbound = 0;
-        for (int i = 0; i < runs; i++)
-        {
-            ecbs.clear();
-            ecbs.solve(vm["cutoffTime"].as<double>() / runs, lowerbound);
-            runtime += ecbs.runtime;
-            if (ecbs.solution_found)
-                break;
-            lowerbound = ecbs.getLowerBound(); //max(current lowerbound, min f value in cleanup list)
-            ecbs.randomRoot = true;
-            cout << "Failed to find solutions in Run " << i << endl;
-        }
-        ecbs.runtime = runtime;
-        if (vm.count("output"))
-            ecbs.saveResults(vm["output"].as<string>(), vm["agents"].as<string>());
-        if (ecbs.solution_found && vm.count("outputPaths"))
-            ecbs.savePaths(vm["outputPaths"].as<string>());
-        /*size_t pos = vm["output"].as<string>().rfind('.');      // position of the file extension
-        string output_name = vm["output"].as<string>().substr(0, pos);     // get the name without extension
-        cbs.saveCT(output_name); // for debug*/
-        if (vm["stats"].as<bool>())
-            ecbs.saveStats(vm["output"].as<string>(), vm["agents"].as<string>());
-        ecbs.clearSearchEngines();
+        int success_trial = 0;
+		vector<float> all_runtimes;
+		for(int trial = 1; trial < 2; trial++){
+
+
+			ECBS ecbs(instance, vm["sipp"].as<bool>(), vm["screen"].as<int>());
+			ecbs.setPrioritizeConflicts(vm["prioritizingConflicts"].as<bool>());
+			ecbs.setDisjointSplitting(vm["disjointSplitting"].as<bool>());
+			ecbs.setBypass(vm["bypass"].as<bool>());
+			ecbs.setRectangleReasoning(vm["rectangleReasoning"].as<bool>());
+			ecbs.setCorridorReasoning(vm["corridorReasoning"].as<bool>());
+			ecbs.setHeuristicType(h, h_hat);
+			ecbs.setTargetReasoning(vm["targetReasoning"].as<bool>());
+			ecbs.setMutexReasoning(false);
+			ecbs.setConflictSelectionRule(conflict);
+			ecbs.setNodeSelectionRule(n);
+			ecbs.setSavingStats(vm["stats"].as<bool>());
+			ecbs.setHighLevelSolver(s, vm["suboptimality"].as<double>());
+			//////////////////////////////////////////////////////////////////////
+			// run
+			double runtime = 0;
+			int lowerbound = 0;
+			for (int i = 0; i < runs; i++)
+			{
+				ecbs.clear();
+				ecbs.solve(vm["cutoffTime"].as<double>() / runs, lowerbound);
+				runtime += ecbs.runtime;
+				if (ecbs.solution_found)
+					break;
+				lowerbound = ecbs.getLowerBound(); //max(current lowerbound, min f value in cleanup list)
+				ecbs.randomRoot = true;
+				cout << "Failed to find solutions in Run " << i << endl;
+			}
+			ecbs.runtime = runtime;
+			all_runtimes.push_back(runtime);
+			if(runtime < 60){
+				success_trial++;
+			}
+			if (vm.count("output"))
+				ecbs.saveResults(vm["output"].as<string>(), vm["agents"].as<string>());
+			if (ecbs.solution_found && vm.count("outputPaths"))
+				ecbs.savePaths(vm["outputPaths"].as<string>());
+			/*size_t pos = vm["output"].as<string>().rfind('.');      // position of the file extension
+			string output_name = vm["output"].as<string>().substr(0, pos);     // get the name without extension
+			cbs.saveCT(output_name); // for debug*/
+			if (vm["stats"].as<bool>())
+				ecbs.saveStats(vm["output"].as<string>(), vm["agents"].as<string>());
+			ecbs.clearSearchEngines();
+		}
+		cout << "Success rate: " << success_trial << endl;
+		cout << "Runtime: ";
+		for(int k = 0;k < all_runtimes.size(); k++){
+			cout << all_runtimes[k] << " " << endl;
+		}
     }
     else
     {
-        CBS cbs(instance, vm["sipp"].as<bool>(), vm["screen"].as<int>());
-        cbs.setPrioritizeConflicts(vm["prioritizingConflicts"].as<bool>());
-        cbs.setDisjointSplitting(vm["disjointSplitting"].as<bool>());
-        cbs.setBypass(vm["bypass"].as<bool>());
-        cbs.setRectangleReasoning(vm["rectangleReasoning"].as<bool>());
-        cbs.setCorridorReasoning(vm["corridorReasoning"].as<bool>());
-        cbs.setHeuristicType(h, h_hat);
-        cbs.setTargetReasoning(vm["targetReasoning"].as<bool>());
-        cbs.setMutexReasoning(false);
-        cbs.setConflictSelectionRule(conflict);
-        cbs.setNodeSelectionRule(n);
-        cbs.setSavingStats(vm["stats"].as<bool>());
-        cbs.setHighLevelSolver(s, vm["suboptimality"].as<double>());
-        //////////////////////////////////////////////////////////////////////
-        // run
-        double runtime = 0;
-        int lowerbound = 0;
-        for (int i = 0; i < runs; i++)
-        {
-            cbs.clear();
-            cbs.solve(vm["cutoffTime"].as<double>() / runs, lowerbound);
-            runtime += cbs.runtime;
-            if (cbs.solution_found)
-			{
-				cout << "\n****************Solution Found**********" << endl;
-				break;
-			}
-            lowerbound = cbs.getLowerBound();
-            cbs.randomRoot = true;
-            cout << "Failed to find solutions in Run " << i << endl;
-        }
-        cbs.runtime = runtime;
-		cout << "\nCBS runtime: " << runtime << endl;
-        if (vm.count("output"))
-            cbs.saveResults(vm["output"].as<string>(), vm["agents"].as<string>());
-        if (cbs.solution_found && vm.count("outputPaths"))
-            cbs.savePaths(vm["outputPaths"].as<string>());
-        if (vm["stats"].as<bool>())
-            cbs.saveStats(vm["output"].as<string>(), vm["agents"].as<string>());
-		cout << "\nWrote output";
-        cbs.clearSearchEngines();
-		cout << "\nCleared";
-    }
-	cout << "\n*********Done with lyf****";
+        int success_trial = 0;
+		vector<float> all_runtimes;
+		for(int trial = 1; trial < 26; trial++){
+			///////////////////////////////////////////////////////////////////////////
+			string scene_file = "scen-random-32-4/room-32-32-4-random-"+std::to_string(trial)+"scen";
+			// load the instance
+			Instance instance(vm["map"].as<string>(), scene_file,
+				vm["agentNum"].as<int>()); //While creating the map, the obstacles are being added at random!
 
+			srand(0);
+			int runs = 1 + vm["restart"].as<int>();
+			//////////////////////////////////////////////////////////////////////
+			CBS cbs(instance, vm["sipp"].as<bool>(), vm["screen"].as<int>());
+			cbs.setPrioritizeConflicts(vm["prioritizingConflicts"].as<bool>());
+			cbs.setDisjointSplitting(vm["disjointSplitting"].as<bool>());
+			cbs.setBypass(vm["bypass"].as<bool>());
+			cbs.setRectangleReasoning(vm["rectangleReasoning"].as<bool>());
+			cbs.setCorridorReasoning(vm["corridorReasoning"].as<bool>());
+			cbs.setHeuristicType(h, h_hat);
+			cbs.setTargetReasoning(vm["targetReasoning"].as<bool>());
+			cbs.setMutexReasoning(false);
+			cbs.setConflictSelectionRule(conflict);
+			cbs.setNodeSelectionRule(n);
+			cbs.setSavingStats(vm["stats"].as<bool>());
+			cbs.setHighLevelSolver(s, vm["suboptimality"].as<double>());
+			//////////////////////////////////////////////////////////////////////
+			// run
+			double runtime = 0;
+			int lowerbound = 0;
+			for (int i = 0; i < runs; i++)
+			{
+				cbs.clear();
+				cbs.solve(vm["cutoffTime"].as<double>() / runs, lowerbound);
+				runtime += cbs.runtime;
+				if (cbs.solution_found)
+				{
+					cout << "\n****************Solution Found**********" << endl;
+					break;
+				}
+				lowerbound = cbs.getLowerBound();
+				cbs.randomRoot = true;
+				cout << "Failed to find solutions in Run " << i << endl;
+			}
+			cbs.runtime = runtime;
+			all_runtimes.push_back(runtime);
+			if(runtime < 60){
+				success_trial++;
+			}
+			cout << "\nCBS runtime: " << runtime << endl;
+			if (vm.count("output"))
+				cbs.saveResults(vm["output"].as<string>(), vm["agents"].as<string>());
+			if (cbs.solution_found && vm.count("outputPaths"))
+				cbs.savePaths(vm["outputPaths"].as<string>());
+			if (vm["stats"].as<bool>())
+				cbs.saveStats(vm["output"].as<string>(), vm["agents"].as<string>());
+			cout << "\nWrote output";
+			cbs.clearSearchEngines();
+			cout << "\nCleared";
+		}
+		cout << "\n*********Done with lyf****\n";
+		cout << "Success rate: " << success_trial << endl;
+		for(int k = 0;k < all_runtimes.size(); k++){
+			cout << all_runtimes[k] << " ";
+		}
+	}
 	return 0;
 
 }
