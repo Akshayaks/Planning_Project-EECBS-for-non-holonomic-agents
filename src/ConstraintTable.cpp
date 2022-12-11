@@ -275,6 +275,14 @@ bool ConstraintTable::constrained(size_t curr_loc, size_t next_loc, int next_t) 
             continue;
         }
         else{
+            int loc1_x = n[i] / num_col;
+			int loc1_y = n[i] % num_col;
+			int loc2_x = end / num_col;
+			int loc2_y = end % num_col;
+
+			if(abs(loc1_x - loc2_x) + abs(loc1_y - loc2_y) > 2){
+                continue;
+            }
             size_t edge_id = (1+n[i])*map_size + end;
             // cout << "\nChecking edge_id: " << edge_id;
             const auto& it = ct.find(edge_id);

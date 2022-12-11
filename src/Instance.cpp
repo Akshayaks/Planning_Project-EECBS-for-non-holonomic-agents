@@ -158,14 +158,23 @@ bool Instance::validMove(int curr, int next) const
 		n.push_back(curr+1);
 		n.push_back(curr-num_of_cols);
 		n.push_back(curr+num_of_cols);
+		cout << "curr: " << getRowCoordinate(curr) << " " << getColCoordinate(curr) << endl;
+		cout << "next: " << getRowCoordinate(next) << " " << getColCoordinate(next) << endl;
 
 		for(int i=0;i<n.size();i++){
 			int end = sum - n[i];
 			if(end < 0 || end > map_size || end == n[i] || n[i] < 0 || n[i] > map_size){
 				continue;
 			}
+			if(getManhattanDistance(n[i],end) > 2){
+				continue;
+			}
 			else{
+				cout << "\nn[i]: " << getRowCoordinate(n[i]) << " " << getColCoordinate(n[i]) << endl;
+				cout << "\nend: " << getRowCoordinate(end) << " " << getColCoordinate(end) << endl;
 				if(my_map[n[i]] && my_map[end]){
+					cout << "\nCannot go through";
+					
 					return false;
 				}
 			}
@@ -805,34 +814,35 @@ list<list<pair<int, double> > > Instance::getPrimitives(int loc, double theta) c
 				neighbors.push_back(list<pair<int, double> >{make_pair(new_loc, angle)});
 			}
 		}
-		else
-		{
-			// longer primitive
-			// calculate bezier curve - get cells - check each cell transition for validity
-			if(validMove(loc, new_loc))
-			{
-				list<pair<int, double> > cellPath = getBezierPathCells(loc, theta, new_loc, angle);
-				bool valid = true;
-				cellPath.push_front(make_pair(loc, theta)); // add start loc to the path to check transition validity
-				auto it = cellPath.begin();
-				while(next(it) != cellPath.end())
-				{
-					if(!validMove(it->first, next(it)->first))
-					{
-						valid = false;
-						break;
-					}
-					++it;
-				}
+		// else
+		// {
+		// 	// longer primitive
+		// 	// calculate bezier curve - get cells - check each cell transition for validity
+		// 	if(validMove(loc, new_loc))
+		// 	{
+		// 		cout << "\nLonger primitive " << loc << " " << new_loc << endl;
+		// 		list<pair<int, double> > cellPath = getBezierPathCells(loc, theta, new_loc, angle);
+		// 		bool valid = true;
+		// 		cellPath.push_front(make_pair(loc, theta)); // add start loc to the path to check transition validity
+		// 		auto it = cellPath.begin();
+		// 		while(next(it) != cellPath.end())
+		// 		{
+		// 			if(!validMove(it->first, next(it)->first))
+		// 			{
+		// 				valid = false;
+		// 				break;
+		// 			}
+		// 			++it;
+		// 		}
 
-				if(valid) // path is valid
-				{
-					// add neighbor
-					cellPath.pop_front(); // remove start loc before adding to neighbors
-					neighbors.push_back(cellPath);
-				}
-			}
-		}
+		// 		if(valid) // path is valid
+		// 		{
+		// 			// add neighbor
+		// 			cellPath.pop_front(); // remove start loc before adding to neighbors
+		// 			neighbors.push_back(cellPath);
+		// 		}
+		// 	}
+		// }
 	}
 
 	return neighbors;

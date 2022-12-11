@@ -6,27 +6,25 @@
 
 #IncludeRegexTransform: 
 
-/home/akshaya/Downloads/EECBS/src/Instance.cpp
-boost/tokenizer.hpp
--
-algorithm
--
-random
--
-chrono
--
-Instance.h
-/home/akshaya/Downloads/EECBS/src/Instance.h
-stdio.h
--
-iostream
--
-math.h
--
+/home/akshaya/Downloads/EECBS/src/ConstraintTable.cpp
+ConstraintTable.h
+/home/akshaya/Downloads/EECBS/src/ConstraintTable.h
 
-inc/Instance.h
+inc/CBSNode.h
 common.h
 inc/common.h
+Conflict.h
+inc/Conflict.h
+
+inc/Conflict.h
+common.h
+inc/common.h
+
+inc/ConstraintTable.h
+common.h
+inc/common.h
+CBSNode.h
+inc/CBSNode.h
 
 inc/common.h
 tuple
