@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib import animation
 import argparse
 import math
+import sys
 
 Colors = ['orange', 'blue', 'green' , 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' , 'black' , 'yellow' , 'magenta']
 
@@ -20,7 +21,7 @@ class Animation:
 
     aspect = map["map"]["dimensions"][0] / map["map"]["dimensions"][1]
 
-    self.fig = plt.figure(frameon=False, figsize=(4 * aspect, 4))
+    self.fig = plt.figure(figsize=(18.5, 10.5))
     self.ax = self.fig.add_subplot(111, aspect='equal')
     self.fig.subplots_adjust(left=0,right=1,bottom=0,top=1, wspace=None, hspace=None)
 
@@ -102,8 +103,16 @@ class Animation:
   def animate_func(self, i):
 
     if i == ((self.T+1)* 10-1):
-      input("Press Enter to visualize the output again...")
-    
+
+      if args.video:
+        print(" \n **** Video saved to: "  + args.video + " ****")
+        print("Exiting...")
+        sys.exit()
+      else:
+        if input("Press 'ENTER' to visualize the output again or 'q' and then 'ENTER' to exit... \n") == 'q':
+          plt.close()
+          sys.exit()
+
     for agent_name, agent in self.combined_schedule.items():
       pos = self.getState(i/10, agent)
       # 0.5 is added to the position so that the agents are at the center of the grid
@@ -175,6 +184,9 @@ if __name__ == "__main__":
   animation = Animation(map, schedule)
 
   if args.video:
+    print("\n\nSaving video...")
+    print("This may take a while... \n")
+    print("The program will exit automatically when the video is saved. \n")
     animation.save(args.video, args.speed)
   else:
     animation.show()
