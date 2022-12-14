@@ -1,4 +1,4 @@
-# EECBS
+# EECBS - From the original codebase
  A bounded-suboptimal solver for Multi-Agent Path Finding
 
 
@@ -9,12 +9,20 @@ It also incorporates with many CBS improvements, including
 bypassing conflicts, prioritizing conflicts, high-level heuristics, and symmetry reasoning.
 More details can be found in our paper at AAAI 2021 [1].
 
-In addition to the techniques described in [1], we also add rapid random restart technique [2] to the code. 
+In addition to the techniques described in [1], the authors also add rapid random restart technique [2] to the code. 
 The default restart times is 0.  
 
-Moreover, we also added a SIPP option that uses SIPPS [3] (instead of state-time A*) in the low level of EECBS to plan paths for agents.
+Moreover, the authors also added a SIPP option that uses SIPPS [3] (instead of state-time A*) in the low level of EECBS to plan paths for agents.
 
 The code requires the external library BOOST (https://www.boost.org/). After you installed BOOST and downloaded the source code, go into the directory of the source code and compile it with CMake: 
+
+## Update: 
+For our course project, we extended this existing implementation to include θ in the state space. This was done keeping in mind that most robots have non-holonomic constraints and a lattice-based planner would be more appropriate for such use cases. The details of this implementation can be found in the [report](16-782%20Final%20Project%20Report-3.pdf)
+
+We also added a visualization for this repository. The usage for it is mentioned [here](visualization/README.md)
+ 
+ <img src="./theta_final.gif" width="300"> 
+
 
 ## Usage
 The code requires the external library [boost](https://www.boost.org/).
@@ -61,6 +69,7 @@ To test the code on more instances,
 you can download the MAPF instances from the [MAPF benchmark](https://movingai.com/benchmarks/mapf/index.html).
 In particular, the format of the scen files is explained [here](https://movingai.com/benchmarks/formats.html).
 For a given number of agents k, the first k rows of the scen file are used to generate the k pairs of start and target locations.
+
 
 ## License
 EECBS is released under USC – Research License. See license.md for further details.
